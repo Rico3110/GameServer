@@ -1,0 +1,7 @@
+C:\Users\Enrico Martin\source\repos\GameServer\GameServer\bin\Debug\GameServer.exe.config
+C:\Users\Enrico Martin\source\repos\GameServer\GameServer\bin\Debug\GameServer.exe
+C:\Users\Enrico Martin\source\repos\GameServer\GameServer\bin\Debug\GameServer.pdb
+C:\Users\Enrico Martin\source\repos\GameServer\GameServer\obj\Debug\GameServer.csprojAssemblyReference.cache
+C:\Users\Enrico Martin\source\repos\GameServer\GameServer\obj\Debug\GameServer.csproj.CoreCompileInputs.cache
+C:\Users\Enrico Martin\source\repos\GameServer\GameServer\obj\Debug\GameServer.exe
+C:\Users\Enrico Martin\source\repos\GameServer\GameServer\obj\Debug\GameServer.pdb
