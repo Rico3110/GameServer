@@ -20,6 +20,9 @@ namespace GameServer
                 Console.WriteLine($"Player \"{username}\" (ID: {fromClient}) has assumed the wrong client ID ({clientIDCheck})!");
             }
             //TODO send player into game
+
+            //Stop Timer
+            Server.StopPingTest(fromClient);
         }
     }
 }

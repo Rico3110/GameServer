@@ -5,6 +5,7 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Net;
 using System.Net.Sockets;
+using System.Diagnostics;
 
 namespace GameServer
 {
@@ -19,6 +20,9 @@ namespace GameServer
         public static Dictionary<int, PacketHandler> packetHandlers;
 
         private static TcpListener tcpListener;
+
+        private static Stopwatch sw;
+        private static long ping;
 
         public static void Start(int maxPlayers, int port)
         {
@@ -65,6 +69,22 @@ namespace GameServer
                 {(int)ClientPackets.welcomeReceived, ServerHandle.WelcomeRecieved}
             };
             Console.WriteLine($"Initialized packets");
+        }
+
+        public static void StartPingTest()
+        {
+            sw = new Stopwatch();
+            sw.Start();
+        }
+
+        public static void StopPingTest(int ClientID)
+        {
+            sw.Stop();
+            ping = sw.ElapsedMilliseconds / 2;
+
+            Console.WriteLine($"Ping to Client {ClientID}: {ping}ms");
+
+            ServerSend.Ping(ClientID, ping);
         }
     }
 }

@@ -43,6 +43,19 @@ namespace GameServer
                 packet.Write(msg);
                 packet.Write(toClient);
 
+                Server.StartPingTest();
+                SendTCPData(toClient, packet);
+            }
+        }
+
+        public static void Ping(int toClient,long ping)
+        {
+            //Send ping to Client
+            using (Packet packet = new Packet((int)ServerPackets.ping))
+            {
+                packet.Write(ping);
+                packet.Write(toClient);
+
                 SendTCPData(toClient, packet);
             }
         }
