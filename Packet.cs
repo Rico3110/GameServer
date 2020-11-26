@@ -8,14 +8,18 @@ namespace GameServer
     public enum ServerPackets
     {
         welcome = 1,
-        ping = 2
+        ping = 2,
+        testArray = 3
+          
     }
 
     /// <summary>Sent from client to server.</summary>
     public enum ClientPackets
     {
         welcomeReceived = 1,
-        ping = 2
+        ping = 2,
+        testArray = 3
+            
     }
 
     public class Packet : IDisposable
@@ -139,6 +143,16 @@ namespace GameServer
         public void Write(uint _value)
         {
             buffer.AddRange(BitConverter.GetBytes(_value));
+        }
+        /// <summary>Adds an uint array to the packet.</summary>
+        /// <param name="_value">The uint array to add.</param>
+        public void Write(uint[] _value)
+        {
+            Write(_value.Length);
+            for(int i = 0;i < _value.Length; i++)
+            {
+                buffer.AddRange(BitConverter.GetBytes(_value[i]));
+            }
         }
         /// <summary>Adds a long to the packet.</summary>
         /// <param name="_value">The long to add.</param>
@@ -271,6 +285,27 @@ namespace GameServer
             else
             {
                 throw new Exception("Could not read value of type 'Uint'!");
+            }
+        }
+
+        /// <summary>Reads an uint array from the packet.</summary>
+        /// <param name="_moveReadPos">Whether or not to move the buffer's read position.</param>
+        public uint[] ReadUIntArray(bool _moveReadPos = true)
+        {
+            if (buffer.Count > readPos)
+            {
+                // If there are unread bytes
+                int length = ReadInt();
+                uint[] array = new uint[length];
+                for(int i = 0;i < length; i++)
+                {
+                    array[i] = ReadUInt();
+                }
+                return array; // Return the uint array
+            }
+            else
+            {
+                throw new Exception("Could not read value of type 'Uint Array'!");
             }
         }
 

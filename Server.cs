@@ -85,6 +85,7 @@ namespace GameServer
             Console.WriteLine($"Ping to Client {ClientID}: {ping}ms");
 
             ServerSend.Ping(ClientID, ping);
+            ServerSend.TestArray(ClientID);
         }
     }
 }

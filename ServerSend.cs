@@ -59,5 +59,24 @@ namespace GameServer
                 SendTCPData(toClient, packet);
             }
         }
+
+        public static void TestArray(int toClient)
+        {
+            //Creating test Array
+            uint[] test = new uint[10000];
+            for(int i = 0;i < test.Length; i++)
+            {
+                test[i] = (uint)i * 9; 
+            }
+
+            //Send Uint Array to Client
+            using (Packet packet = new Packet((int)ServerPackets.testArray))
+            {
+                packet.Write(test);
+                packet.Write(toClient);
+
+                SendTCPData(toClient, packet);
+            }
+        }
     }
 }
