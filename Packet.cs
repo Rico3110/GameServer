@@ -9,8 +9,8 @@ namespace GameServer
     {
         welcome = 1,
         ping = 2,
-        testArray = 3
-          
+        testArray = 3,
+        hexData = 10       
     }
 
     /// <summary>Sent from client to server.</summary>
@@ -18,8 +18,8 @@ namespace GameServer
     {
         welcomeReceived = 1,
         ping = 2,
-        testArray = 3
-            
+        testArray = 3,
+        hexData = 10
     }
 
     public class Packet : IDisposable

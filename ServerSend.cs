@@ -78,5 +78,22 @@ namespace GameServer
                 SendTCPData(toClient, packet);
             }
         }
+
+        /// <summary>
+        /// Sends the given mapdata as an uint array to the choosen client
+        /// </summary>
+        /// <param name="toClient">The client, who gets send the data</param>
+        /// <param name="data">The hexmap data as an uint array</param>
+        public static void SendHexData(int toClient,uint[] data)
+        {
+            //Send Uint Array to Client
+            using (Packet packet = new Packet((int)ServerPackets.hexData))
+            {
+                packet.Write(data);
+                packet.Write(toClient);
+
+                SendTCPData(toClient, packet);
+            }
+        }
     }
 }
