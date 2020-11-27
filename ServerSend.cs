@@ -59,5 +59,41 @@ namespace GameServer
                 SendTCPData(toClient, packet);
             }
         }
+
+        public static void TestArray(int toClient)
+        {
+            //Creating test Array
+            uint[] test = new uint[10000];
+            for(int i = 0;i < test.Length; i++)
+            {
+                test[i] = (uint)i * 9; 
+            }
+
+            //Send Uint Array to Client
+            using (Packet packet = new Packet((int)ServerPackets.testArray))
+            {
+                packet.Write(test);
+                packet.Write(toClient);
+
+                SendTCPData(toClient, packet);
+            }
+        }
+
+        /// <summary>
+        /// Sends the given mapdata as an uint array to the choosen client
+        /// </summary>
+        /// <param name="toClient">The client, who gets send the data</param>
+        /// <param name="data">The hexmap data as an uint array</param>
+        public static void SendHexData(int toClient,uint[] data)
+        {
+            //Send Uint Array to Client
+            using (Packet packet = new Packet((int)ServerPackets.hexData))
+            {
+                packet.Write(data);
+                packet.Write(toClient);
+
+                SendTCPData(toClient, packet);
+            }
+        }
     }
 }
