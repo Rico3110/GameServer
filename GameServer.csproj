@@ -35,6 +35,7 @@
   <ItemGroup>
     <Reference Include="System" />
     <Reference Include="System.Core" />
+    <Reference Include="System.Drawing" />
     <Reference Include="System.Xml.Linq" />
     <Reference Include="System.Data.DataSetExtensions" />
     <Reference Include="Microsoft.CSharp" />
@@ -46,6 +47,11 @@
     <Compile Include="Client.cs" />
     <Compile Include="Constants.cs" />
     <Compile Include="GameLogic.cs" />
+    <Compile Include="Map\MapboxHandle.cs" />
+    <Compile Include="Map\HexCell.cs" />
+    <Compile Include="Map\Biome.cs" />
+    <Compile Include="Map\Map.cs" />
+    <Compile Include="Map\Ressource.cs" />
     <Compile Include="Packet.cs" />
     <Compile Include="Server.cs" />
     <Compile Include="Program.cs" />

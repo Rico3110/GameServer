@@ -6,6 +6,9 @@ using System.Threading.Tasks;
 using System.Net;
 using System.Net.Sockets;
 using System.Diagnostics;
+using GameServer.Map;
+
+
 
 namespace GameServer
 {
@@ -37,6 +40,8 @@ namespace GameServer
             tcpListener.BeginAcceptTcpClient(new AsyncCallback(TCPConnectCallback), null);
 
             Console.WriteLine($"Server Started on {Port}.");
+
+            Map.Map map = new Map.Map();
         }
 
         private static void TCPConnectCallback(IAsyncResult result)
