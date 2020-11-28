@@ -1,6 +1,6 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
-
+using GameServer.DataTypes;
 
 public class HexCell 
 {
@@ -10,32 +10,12 @@ public class HexCell
        
     private HexCell[] neighbors;
 
-    private HexCellData data;
+    public HexCellData Data { get; set; }
 
-    private BuildingData building;
+    public BuildingData Building { get; set; }
 
-    public BuildingData Building
-    {
-        get
-        {
-            return building;
-        }
-    }
 
-    public HexCellData Data 
-    {
-        get
-        {
-            return data;
-        }
-        set
-        {
-            data = value;           
-            Refresh();
-        }
-    }   
 
-       
     public int GetElevationDifference(HexDirection direction)
     {
         int difference = (int)Data.Elevation - (int)GetNeighbor(direction).Data.Elevation;
@@ -51,26 +31,5 @@ public class HexCell
     {
         neighbors[(int)direction] = cell;
         cell.neighbors[(int)direction.Opposite()] = this;
-    }
-
-    void RefreshSelfOnly()
-    {
-        chunk.Refresh();
-    }
-
-    void Refresh()
-    {
-        if (chunk)
-        {
-            chunk.Refresh();
-            for(int i = 0; i < neighbors.Length; i++)
-            {
-                HexCell neighbor = neighbors[i];
-                if(neighbor != null && neighbor.chunk != chunk)
-                {
-                    neighbor.chunk.Refresh();
-                }
-            }
-        }
-    }
+    }    
 }
