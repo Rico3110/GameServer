@@ -7,6 +7,7 @@ using System.Net;
 using System.Net.Sockets;
 using System.Diagnostics;
 using GameServer.Map;
+using GameServer.DataTypes;
 
 
 
@@ -41,7 +42,10 @@ namespace GameServer
 
             Console.WriteLine($"Server Started on {Port}.");
 
-            Map.Map map = new Map.Map();
+            //Map.Map map = new Map.Map();
+            uint[,] test = GameServer.Map.MapboxHandle.createMap(49.889347, 8.667032, 1, 1);
+            HexCellData tmp = new HexCellData(test[0, 0]);
+            Console.WriteLine(tmp.toString());
         }
 
         private static void TCPConnectCallback(IAsyncResult result)

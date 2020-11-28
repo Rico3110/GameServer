@@ -118,7 +118,7 @@ namespace GameServer.Map
             return (Math.PI / 180) * angle;
         }
 
-        static uint[,] createMap(double lon, double lat, int tilesX, int tilesY)
+        public static uint[,] createMap(double lon, double lat, int tilesX, int tilesY)
         {
             Bitmap[,] landImages = FetchLandcoverMap(lon, lat, tilesX, tilesY);
             Bitmap[,] heightImages = FetchHeightMap(lon, lat, tilesX, tilesY);
@@ -143,7 +143,7 @@ namespace GameServer.Map
                     Color heightPixel = heightImages[pixelX / 256, pixelZ / 256].GetPixel(pixelX % 256, pixelZ % 256);
                     float height = -10000f + (((heightPixel.R * 255f * 256f * 256f) + (heightPixel.G * 255f * 256f) + heightPixel.B * 255f) * 0.1f);
 
-                    HexCellData tmp = new HexCellData((ushort)(height - 100), HexCellBiome.FOREST, HexCellRessource.NONE);
+                    HexCellData tmp = new HexCellData((ushort)(height - 100), HexCellBiome.CROP, HexCellRessource.NONE);
                     map[i, j] = tmp.toUint();
                 }
             }
@@ -155,15 +155,15 @@ namespace GameServer.Map
             Bitmap[,] images = new Bitmap[tilesX, tilesY];
             int x = long2tilex(lon, zoom);
             int y = lat2tiley(lat, zoom);
-            for (int i = -(x - 1) / 2; i < (x + 1) / 2; i++)
+            for (int i = -(tilesX - 1) / 2; i < (tilesX + 1) / 2; i++)
             {
-                for (int j = -(y - 1) / 2; j < (y + 1) / 2; j++)
+                for (int j = -(tilesY - 1) / 2; j < (tilesY + 1) / 2; j++)
                 {
                     string url = "https://api.mapbox.com/styles/v1" + "/huterguier/ckhklftc13x1k19o1hdnhnn5j" + "/tiles/256/" + zoom + "/" + (x + i) + "/" + (y - j) + "?access_token=pk.eyJ1IjoiaHV0ZXJndWllciIsImEiOiJja2g2Nm56cTEwOTV0MnhuemR1bHRianJtIn0.ViSkV78j-GHgC18pMnZfrQ";
                     WebRequest request = WebRequest.Create(url);
                     HttpWebResponse response = (HttpWebResponse)request.GetResponse();
                     Image image = Image.FromStream(response.GetResponseStream());
-                    images[i, j] = new Bitmap(image);
+                    images[i + (tilesX - 1) / 2, j + (tilesY- 1) / 2] = new Bitmap(image);
                 }
             }
             return images;
@@ -174,15 +174,15 @@ namespace GameServer.Map
             Bitmap[,] images = new Bitmap[tilesX, tilesY];
             int x = long2tilex(lon, zoom);
             int y = lat2tiley(lat, zoom);
-            for (int i = -(x - 1) / 2; i < (x + 1) / 2; i++)
+            for (int i = -(tilesX - 1) / 2; i < (tilesX + 1) / 2; i++)
             {
-                for (int j = -(y - 1) / 2; j < (y + 1) / 2; j++)
+                for (int j = -(tilesY - 1) / 2; j < (tilesY + 1) / 2; j++)
                 {
                     string url = "https://api.mapbox.com/v4/mapbox.terrain-rgb/" + zoom + "/" + (x + i) + "/" + (y - j) + ".png?access_token=pk.eyJ1IjoiaHVtYW5pemVyIiwiYSI6ImNraGdkc2t6YzBnYjYyeW1jOTJ0a3kxdGkifQ.SIpcsxeP7Xp2RTxDAEv3wA";
                     WebRequest request = WebRequest.Create(url);
                     HttpWebResponse response = (HttpWebResponse)request.GetResponse();
                     Image image = Image.FromStream(response.GetResponseStream());
-                    images[i, j] = new Bitmap(image);
+                    images[i + (tilesX - 1) / 2, j + (tilesY - 1) / 2] = new Bitmap(image);
                 }
             }
             return images;
