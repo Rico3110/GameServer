@@ -44,16 +44,16 @@ namespace GameServer.Map
 
         public void fetchMap(double lat, double lon)
         {
-            tileX = long2tilex(lon, zoom);
-            tileY = lat2tiley(lat, zoom);
+            tileX = Slippy.long2tilex(lon, zoom);
+            tileY = Slippy.lat2tiley(lat, zoom);
 
             //Fetch Maps
             FetchHeightMap2(tileX, tileY, zoom);
             FetchLandcoverMap2(tileX, tileY);
 
             //Construct Coords
-            londiff = Math.Abs(tilex2long(tileX, zoom) - tilex2long(tileX + 1, zoom));
-            latdiff = Math.Abs(tiley2lat(tileY, zoom) - tiley2lat(tileY + 1, zoom));
+            londiff = Math.Abs(Slippy.tilex2long(tileX, zoom) - Slippy.tilex2long(tileX + 1, zoom));
+            latdiff = Math.Abs(Slippy.tiley2lat(tileY, zoom) - Slippy.tiley2lat(tileY + 1, zoom));
         }
 
         void FetchLandcoverMap2(int x, int y)
@@ -93,31 +93,7 @@ namespace GameServer.Map
             }
         }
 
-        public static int long2tilex(double lon, int z)
-        {
-            return (int)(Math.Floor((lon + 180.0) / 360.0 * (1 << z)));
-        }
-
-        public static int lat2tiley(double lat, int z)
-        {
-            return (int)Math.Floor((1 - Math.Log(Math.Tan(ToRadians(lat)) + 1 / Math.Cos(ToRadians(lat))) / Math.PI) / 2 * (1 << z));
-        }
-
-        public static double tilex2long(int x, int z)
-        {
-            return (double)x / (double)(1 << z) * 360.0 - 180;
-        }
-
-        public static double tiley2lat(int y, int z)
-        {
-            double n = Math.PI - 2.0 * Math.PI * (double)y / (double)(1 << z);
-            return 180.0 / Math.PI * Math.Atan(0.5 * (Math.Exp(n) - Math.Exp(-n)));
-        }
-
-        static double ToRadians(double angle)
-        {
-            return (Math.PI / 180) * angle;
-        }
+        
 
         public static uint[,] createMap(double lon, double lat, int tilesX, int tilesY)
         {
@@ -143,8 +119,9 @@ namespace GameServer.Map
                     Color landPixel = landImages[pixelX / 256, pixelZ / 256].GetPixel(pixelX % 256, pixelZ % 256);
                     Color heightPixel = heightImages[pixelX / 256, pixelZ / 256].GetPixel(pixelX % 256, pixelZ % 256);
                     float height = -10000f + (((heightPixel.R * 255f * 256f * 256f) + (heightPixel.G * 255f * 256f) + heightPixel.B * 255f) * 0.1f);
-
+                    
                     HexCellData tmp = new HexCellData((ushort)(height - 100), HexCellBiome.CROP, HexCellRessource.NONE);
+                    Console.WriteLine(tmp.toString());
                     map[i, j] = tmp.toUint();
                 }
             }
@@ -154,8 +131,8 @@ namespace GameServer.Map
         static Bitmap[,] FetchLandcoverMap(double lon, double lat, int tilesX, int tilesY)
         {
             Bitmap[,] images = new Bitmap[tilesX, tilesY];
-            int x = long2tilex(lon, zoom);
-            int y = lat2tiley(lat, zoom);
+            int x = Slippy.long2tilex(lon, zoom);
+            int y = Slippy.lat2tiley(lat, zoom);
             for (int i = -(tilesX - 1) / 2; i < (tilesX + 1) / 2; i++)
             {
                 for (int j = -(tilesY - 1) / 2; j < (tilesY + 1) / 2; j++)
@@ -173,8 +150,8 @@ namespace GameServer.Map
         static Bitmap[,] FetchHeightMap(double lon, double lat, int tilesX, int tilesY)
         {
             Bitmap[,] images = new Bitmap[tilesX, tilesY];
-            int x = long2tilex(lon, zoom);
-            int y = lat2tiley(lat, zoom);
+            int x = Slippy.long2tilex(lon, zoom);
+            int y = Slippy.lat2tiley(lat, zoom);
             for (int i = -(tilesX - 1) / 2; i < (tilesX + 1) / 2; i++)
             {
                 for (int j = -(tilesY - 1) / 2; j < (tilesY + 1) / 2; j++)

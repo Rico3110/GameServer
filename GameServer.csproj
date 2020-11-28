@@ -57,10 +57,8 @@
     <Compile Include="HexGrid\HexGridChunk.cs" />
     <Compile Include="HexGrid\HexMetrics.cs" />
     <Compile Include="Map\MapboxHandle.cs" />
-    <Compile Include="Map\HexCell.cs" />
-    <Compile Include="Map\Biome.cs" />
     <Compile Include="Map\Map.cs" />
-    <Compile Include="Map\Ressource.cs" />
+    <Compile Include="Map\Slippy.cs" />
     <Compile Include="Packet.cs" />
     <Compile Include="Server.cs" />
     <Compile Include="Program.cs" />
