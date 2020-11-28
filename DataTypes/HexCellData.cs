@@ -44,6 +44,11 @@ namespace GameServer.DataTypes
             data = data.SetSubBits((uint)Ressource, 20, 4);
             return data;
         }
+
+        public string toString()
+        {
+            return this.Biome + ", " + this.Elevation + ", " + this.Ressource;
+        }
     }
 
     internal static class HexCellDataHelper

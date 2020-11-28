@@ -18,6 +18,7 @@ public static class HexMetrics
     public const float cellPerturbStrength = 1.5f;
     public const float elevationPerturbStrength = 0.5f;
 
+    /*
     public static Vector3[] corners =
     {
         new Vector3(0f, 0f, outerRadius),
@@ -51,5 +52,6 @@ public static class HexMetrics
     public static Vector3 GetBridge(HexDirection direction)
     {
         return (corners[(int)direction] + corners[((int)direction + 1) % 6]) * blendFactor;
-    }      
+    }
+    */
 }
