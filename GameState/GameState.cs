@@ -4,8 +4,8 @@ namespace GameServer.GameState
     public class GameState
     {
         uint[,] map;
-        uint mapSizeX;
-        uint mapSizeY;
+        uint chunkCountX;
+        uint chunkCountZ;
         uint buildings;
         uint players;
     }

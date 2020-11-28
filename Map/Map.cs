@@ -6,7 +6,6 @@ namespace GameServer.Map
     public class Map
     {
         MapboxHandle mapbox;
-        HexCell[,] map;
 
         private int numberOfHexTilesPerTileX = 10;
         private int numberOfHexTilesPerTileY = 10;

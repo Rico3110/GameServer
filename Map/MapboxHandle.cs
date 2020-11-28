@@ -101,6 +101,7 @@ namespace GameServer.Map
             Bitmap[,] heightImages = FetchHeightMap(lon, lat, tilesX, tilesY);
             int cellCountX = tilesX * numberOfCellsPerTileX;
             int cellCountY = tilesY * numberOfCellsPerTileY;
+
             float hexWidth = HexMetrics.innerRadius + 2f * HexMetrics.innerRadius * (float)cellCountX;
             float hexHeight = 0.5f * HexMetrics.outerRadius + 1.5f * HexMetrics.outerRadius * (float)cellCountY;
 

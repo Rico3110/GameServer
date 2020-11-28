@@ -3,23 +3,14 @@ using System.Collections.Generic;
 
 namespace GameServer.HexGrid
 {
-
     public static class HexMetrics
     {
         public const float outerRadius = 10f;
         public const float innerRadius = outerRadius * 0.866025404f;
 
-        public const float solidFactor = 0.8f;
-        public const float blendFactor = 1f - solidFactor;
-
         public const float elevationStep = .4f;
 
         public const int chunkSizeX = 5, chunkSizeZ = 5;
-
-
-        public const float noiseScale = 0.003f;
-        public const float cellPerturbStrength = 1.5f;
-        public const float elevationPerturbStrength = 0.5f;
         /*
         public static Vector3[] corners =
         {

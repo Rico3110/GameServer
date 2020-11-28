@@ -36,16 +36,13 @@ namespace GameServer
             Console.WriteLine("Starting Server...");
             InitSeverData();
 
+            uint[,] test = GameServer.Map.MapboxHandle.createMap(49.889347, 8.667032, 1, 1);
+
             tcpListener = new TcpListener(IPAddress.Any, Port);
             tcpListener.Start();
             tcpListener.BeginAcceptTcpClient(new AsyncCallback(TCPConnectCallback), null);
 
-            Console.WriteLine($"Server Started on {Port}.");
-
-            //Map.Map map = new Map.Map();
-            uint[,] test = GameServer.Map.MapboxHandle.createMap(49.889347, 8.667032, 1, 1);
-            HexCellData tmp = new HexCellData(test[0, 0]);
-            Console.WriteLine(tmp.toString());
+            Console.WriteLine($"Server Started on {Port}.");                   
         }
 
         private static void TCPConnectCallback(IAsyncResult result)
