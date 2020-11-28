@@ -47,6 +47,12 @@
     <Compile Include="Client.cs" />
     <Compile Include="Constants.cs" />
     <Compile Include="GameLogic.cs" />
+    <Compile Include="HexGrid\HexCell.cs" />
+    <Compile Include="HexGrid\HexCoordinates.cs" />
+    <Compile Include="HexGrid\HexDirection.cs" />
+    <Compile Include="HexGrid\HexGrid.cs" />
+    <Compile Include="HexGrid\HexGridChunk.cs" />
+    <Compile Include="HexGrid\HexMetrics.cs" />
     <Compile Include="Map\MapboxHandle.cs" />
     <Compile Include="Map\HexCell.cs" />
     <Compile Include="Map\Biome.cs" />
@@ -63,5 +69,6 @@
   <ItemGroup>
     <None Include="App.config" />
   </ItemGroup>
+  <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

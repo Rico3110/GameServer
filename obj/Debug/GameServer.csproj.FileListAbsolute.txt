@@ -12,3 +12,9 @@ C:\Users\User\Studium\SG\GameServer\obj\Debug\GameServer.csprojAssemblyReference
 C:\Users\User\Studium\SG\GameServer\obj\Debug\GameServer.csproj.CoreCompileInputs.cache
 C:\Users\User\Studium\SG\GameServer\obj\Debug\GameServer.exe
 C:\Users\User\Studium\SG\GameServer\obj\Debug\GameServer.pdb
+C:\Users\Henrik\Desktop\GameServer\bin\Debug\GameServer.exe.config
+C:\Users\Henrik\Desktop\GameServer\bin\Debug\GameServer.exe
+C:\Users\Henrik\Desktop\GameServer\bin\Debug\GameServer.pdb
+C:\Users\Henrik\Desktop\GameServer\obj\Debug\GameServer.csprojAssemblyReference.cache
+C:\Users\Henrik\Desktop\GameServer\obj\Debug\GameServer.exe
+C:\Users\Henrik\Desktop\GameServer\obj\Debug\GameServer.pdb
