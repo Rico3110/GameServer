@@ -13,8 +13,8 @@ namespace GameServer.DataTypes
 
     public class BuildingData
     {
-        BuildingType Type { get; }
-        byte Level { get; }
-        byte TeamID { get; }
+        public BuildingType Type { get; }
+        public byte Level { get; }
+        public byte TeamID { get; }
     }
 }
