@@ -2,6 +2,7 @@
 using System.IO;
 using System.Net;
 using System.Drawing;
+using GameServer.DataTypes;
 
 namespace GameServer.Map
 {
@@ -138,11 +139,12 @@ namespace GameServer.Map
                     int pixelX = (int)((x / hexWidth) * imageWidth);
                     int pixelZ = (int)((y / hexWidth) * imageHeight);
 
-                    Color landColor = landImages[pixelX / 256, pixelZ / 256].GetPixel(pixelX % 256, pixelZ % 256);
-                    Color heightColor = heightImages[pixelX / 256, pixelZ / 256].GetPixel(pixelX % 256, pixelZ % 256);
+                    Color landPixel = landImages[pixelX / 256, pixelZ / 256].GetPixel(pixelX % 256, pixelZ % 256);
+                    Color heightPixel = heightImages[pixelX / 256, pixelZ / 256].GetPixel(pixelX % 256, pixelZ % 256);
+                    float height = -10000f + (((heightPixel.R * 255f * 256f * 256f) + (heightPixel.G * 255f * 256f) + heightPixel.B * 255f) * 0.1f);
 
-                    HexCellData tmp = new HexCellData();
-                    map[i, j] = tmp.ToUInt();
+                    HexCellData tmp = new HexCellData((ushort)(height - 100), HexCellBiome.FOREST, HexCellRessource.NONE);
+                    map[i, j] = tmp.toUint();
                 }
             }
             return map;
