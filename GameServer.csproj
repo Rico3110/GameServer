@@ -46,6 +46,9 @@
   <ItemGroup>
     <Compile Include="Client.cs" />
     <Compile Include="Constants.cs" />
+    <Compile Include="DataTypes\BuildingData.cs" />
+    <Compile Include="DataTypes\DataTypeHelper.cs" />
+    <Compile Include="DataTypes\HexCellData.cs" />
     <Compile Include="GameLogic.cs" />
     <Compile Include="HexGrid\HexCell.cs" />
     <Compile Include="HexGrid\HexCoordinates.cs" />

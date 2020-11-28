@@ -1,11 +1,9 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
-using UnityEngine;
 
 [System.Serializable]
 public struct HexCoordinates
-{
-    [SerializeField]
+{  
     private int x, z;
 
     public int X
