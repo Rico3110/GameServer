@@ -3,6 +3,7 @@ using System.IO;
 using System.Net;
 using System.Drawing;
 using GameServer.DataTypes;
+using GameServer.HexGrid;
 
 namespace GameServer.Map
 {

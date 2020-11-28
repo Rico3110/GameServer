@@ -5,7 +5,7 @@ public class HexGridChunk
 {
     HexCell[] cells;    
 
-    private HexGridChunk()
+    public HexGridChunk()
     {        
         cells = new HexCell[HexMetrics.chunkSizeX * HexMetrics.chunkSizeZ];
     }    

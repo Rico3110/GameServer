@@ -1,7 +1,7 @@
-﻿using System.Collections;
+﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 
-[System.Serializable]
 public struct HexCoordinates
 {  
     private int x, z;
@@ -41,22 +41,22 @@ public struct HexCoordinates
         return new HexCoordinates(x - z / 2, z);
     }
 
-    public static HexCoordinates FromPosition(Vector3 position)
+    public static HexCoordinates FromPosition(float px, float pz)
     {
-        float x = position.x / (HexMetrics.innerRadius * 2f);
+        float x = px / (HexMetrics.innerRadius * 2f);
         float y = -x;
-        float offset = position.z / (HexMetrics.outerRadius * 3f);
+        float offset = pz / (HexMetrics.outerRadius * 3f);
         x -= offset;
         y -= offset;
-        int iX = Mathf.RoundToInt(x);
-        int iY = Mathf.RoundToInt(y);
-        int iZ = Mathf.RoundToInt(-x - y);
+        int iX = (int)Math.Round(x);
+        int iY = (int)Math.Round(y);
+        int iZ = (int)Math.Round(-x - y); 
 
         if (iX + iY + iZ != 0)
         {
-            float dX = Mathf.Abs(x - iX);
-            float dY = Mathf.Abs(y - iY);
-            float dZ = Mathf.Abs(-x - y - iZ);
+            float dX = Math.Abs(x - iX);
+            float dY = Math.Abs(y - iY);
+            float dZ = Math.Abs(-x - y - iZ);
 
             if (dX > dY && dX > dZ)
             {
