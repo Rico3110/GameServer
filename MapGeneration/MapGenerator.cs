@@ -1,10 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using System.Net;
 using System.Drawing;
+using System.Numerics;
 using GameServer.GameState;
 using GameServer.HexGrid;
 using GameServer.DataTypes;
@@ -17,13 +14,19 @@ namespace GameServer.MapGeneration
         private readonly double LATITUDE;
 
         private readonly int TILE_COUNT_X;
-        private readonly int TILE_COUNT_Y;
+        private readonly int TILE_COUNT_Z;
         
         private readonly int IMAGE_WIDTH;
         private readonly int IMAGE_HEIGHT;
 
-        private const int CHUNKS_PER_TILE_X = 5;
-        private const int CHUNKS_PER_TILE_Y = 5;
+        private readonly int CELL_COUNT_X;
+        private readonly int CELL_COUNT_Z;
+
+        private readonly float HEX_WIDTH;
+        private readonly float HEX_HEIGHT;
+
+        private const int CHUNKS_PER_TILE_X = 2;
+        private const int CHUNKS_PER_TILE_Z = 2;
 
         private const int SINGLE_IMAGE_WIDTH = 256;
         private const int SINGLE_IMAGE_HEIGHT = 256;
@@ -41,55 +44,93 @@ namespace GameServer.MapGeneration
             LATITUDE = lat;
 
             TILE_COUNT_X = size;
-            TILE_COUNT_Y = size;
+            TILE_COUNT_Z = size;
 
             IMAGE_WIDTH = size * SINGLE_IMAGE_WIDTH;
-            IMAGE_HEIGHT = size * SINGLE_IMAGE_HEIGHT;            
+            IMAGE_HEIGHT = size * SINGLE_IMAGE_HEIGHT;
+
+            CELL_COUNT_X = TILE_COUNT_X * CHUNKS_PER_TILE_X * HexMetrics.chunkSizeX;
+            CELL_COUNT_Z = TILE_COUNT_Z * CHUNKS_PER_TILE_Z * HexMetrics.chunkSizeZ;
+
+            HEX_WIDTH = HexMetrics.innerRadius + 2f * HexMetrics.innerRadius * (float)CELL_COUNT_X;
+            HEX_HEIGHT = 0.5f * HexMetrics.outerRadius + 1.5f * HexMetrics.outerRadius * (float)CELL_COUNT_Z;
         }
 
         public uint[] createMap()
         {
             FetchMaps();
 
-            int cellCountX = TILE_COUNT_X * CHUNKS_PER_TILE_X * HexMetrics.chunkSizeX;
-            int cellCountZ = TILE_COUNT_Y * CHUNKS_PER_TILE_Y * HexMetrics.chunkSizeZ;
+            
 
-            Console.WriteLine("cellCountX: " + cellCountX);
-            Console.WriteLine("cellCountZ: " + cellCountZ);
+            Console.WriteLine("cellCountX: " + CELL_COUNT_X);
+            Console.WriteLine("cellCountZ: " + CELL_COUNT_Z);
+            
 
+            uint[] map = new uint[CELL_COUNT_X * CELL_COUNT_Z];
 
-            float hexWidth = HexMetrics.innerRadius + 2f * HexMetrics.innerRadius * (float)cellCountX;
-            float hexHeight = 0.5f * HexMetrics.outerRadius + 1.5f * HexMetrics.outerRadius * (float)cellCountZ;
-
-            uint[] map = new uint[cellCountX * cellCountZ];
-
-            for (int z = 0; z < cellCountZ; z++)
+            for (int z = 0; z < CELL_COUNT_Z; z++)
             {
-                for (int x = 0; x < cellCountX; x++)
+                for (int x = 0; x < CELL_COUNT_X; x++)
                 {
-                    float posX = (x + z * 0.5f - z / 2) * (HexMetrics.innerRadius * 2f);
-                    float posZ = z * (HexMetrics.outerRadius * 1.5f);
+                    HexCellBiome biome = parseBiome(x, z);
+                    ushort height = parseHeight(x, z);
 
-                    int pixelX = (int)((posX / hexWidth) * (float)IMAGE_WIDTH);
-                    int pixelZ = (int)((posZ / hexWidth) * (float)IMAGE_HEIGHT);
-
-                    Console.WriteLine(pixelX + ", " + pixelZ);
-
-                    Color landPixel = landImages[pixelX / 256, pixelZ / 256].GetPixel(pixelX % 256, pixelZ % 256);
-                    Color heightPixel = heightImages[pixelX / 256, pixelZ / 256].GetPixel(pixelX % 256, pixelZ % 256);
-                    float height = -10000f + ((float)((heightPixel.R * 256 * 256) + (heightPixel.G * 256) + heightPixel.B) * 0.1f);                    
-                    HexCellData data = new HexCellData((ushort)(height), fromColorToBiome(landPixel), HexCellRessource.NONE);
+                    HexCellData data = new HexCellData(height, biome, HexCellRessource.NONE);
                     
-                    map[z * cellCountX + x] = data.toUint();
+                    map[z * CELL_COUNT_X + x] = data.toUint();
                 }
             }
             return map;
         }
 
+        private HexCellBiome parseBiome(int x, int z)
+        {
+            float posX = (x + z * 0.5f - z / 2) * (HexMetrics.innerRadius * 2f) + 0.5f * HexMetrics.outerRadius;
+            float posZ = z * (HexMetrics.outerRadius * 1.5f) + 0.5f * HexMetrics.innerRadius;
+          
+            int pixelX = (int)((posX / HEX_WIDTH) * (float)IMAGE_WIDTH);
+            int pixelZ = (int)((posZ / HEX_WIDTH) * (float)IMAGE_HEIGHT);
+
+            Vector3 position = new Vector3(posX, 0, posZ);
+
+            for (HexDirection d = HexDirection.NE; d <= HexDirection.NW; d++)
+            {
+                position += 0.5f * HexMetrics.GetFirstCorner(d);
+
+                int pixX = (int)((position.X / HEX_WIDTH) * (float)IMAGE_WIDTH);
+                int pixZ = (int)((position.Z / HEX_WIDTH) * (float)IMAGE_HEIGHT);
+
+                Color landPix = landImages[pixX / 256, pixZ / 256].GetPixel(pixX % 256, 255 - pixZ % 256);
+
+                if(fromColorToBiome(landPix) == HexCellBiome.WATER){
+                    return HexCellBiome.WATER;
+                }
+
+                position -= 0.5f * HexMetrics.GetFirstCorner(d);
+            }
+
+            Color landPixel = landImages[pixelX / 256, pixelZ / 256].GetPixel(pixelX % 256, 255 - pixelZ % 256);
+            return fromColorToBiome(landPixel);
+        }
+
+        private ushort parseHeight(int x, int z)
+        {
+            float posX = (x + z * 0.5f - z / 2) * (HexMetrics.innerRadius * 2f);
+            float posZ = z * (HexMetrics.outerRadius * 1.5f);
+        
+            int pixelX = (int)((posX / HEX_WIDTH) * (float)IMAGE_WIDTH);
+            int pixelZ = (int)((posZ / HEX_WIDTH) * (float)IMAGE_HEIGHT);
+
+            Color heightPixel = heightImages[pixelX / 256, pixelZ / 256].GetPixel(pixelX % 256, 255 - pixelZ % 256);
+            float height = -10000f + ((float)((heightPixel.R * 256 * 256) + (heightPixel.G * 256) + heightPixel.B) * 0.1f);
+
+            return (ushort)height;
+        }
+
         private void FetchMaps()
         {           
-            landImages = MapboxHandler.FetchLandcoverMap(LONGITUDE, LATITUDE, TILE_COUNT_X, TILE_COUNT_Y);
-            heightImages = MapboxHandler.FetchHeightMap(LONGITUDE, LATITUDE, TILE_COUNT_X, TILE_COUNT_Y);
+            landImages = MapboxHandler.FetchLandcoverMap(LONGITUDE, LATITUDE, TILE_COUNT_X, TILE_COUNT_Z);
+            heightImages = MapboxHandler.FetchHeightMap(LONGITUDE, LATITUDE, TILE_COUNT_X, TILE_COUNT_Z);
         }
 
         private HexCellBiome fromColorToBiome(Color color)

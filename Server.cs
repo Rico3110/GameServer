@@ -39,7 +39,7 @@ namespace GameServer
             InitSeverData();
 
             Console.WriteLine("Generating Map...");
-            MapGenerator mapGenerator = new MapGenerator(49.888441, 8.667219, 3);
+            MapGenerator mapGenerator = new MapGenerator(50.392, 8.065, 5);
             map = mapGenerator.createMap();
 
             tcpListener = new TcpListener(IPAddress.Any, Port);
