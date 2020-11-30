@@ -35,7 +35,7 @@ namespace GameServer.MapGeneration
         private Bitmap[,] heightImages;
 
 
-        public MapGenerator(double lon, double lat, int size)
+        public MapGenerator(double lat, double lon, int size)
         {
             LONGITUDE = lon;
             LATITUDE = lat;
@@ -47,7 +47,7 @@ namespace GameServer.MapGeneration
             IMAGE_HEIGHT = size * SINGLE_IMAGE_HEIGHT;            
         }
 
-        public uint[,] createMap()
+        public uint[] createMap()
         {
             FetchMaps();
 
@@ -57,17 +57,17 @@ namespace GameServer.MapGeneration
             float hexWidth = HexMetrics.innerRadius + 2f * HexMetrics.innerRadius * (float)cellCountX;
             float hexHeight = 0.5f * HexMetrics.outerRadius + 1.5f * HexMetrics.outerRadius * (float)cellCountZ;
 
-            uint[,] map = new uint[cellCountX, cellCountZ];
+            uint[] map = new uint[cellCountX * cellCountZ];
 
-            for (int i = 0; i < cellCountX; i++)
+            for (int z = 0; z < cellCountZ; z++)
             {
-                for (int j = 0; j < cellCountZ; j++)
+                for (int x = 0; x < cellCountX; x++)
                 {
-                    double x = (j + i * 0.5f - i / 2) * (HexMetrics.innerRadius * 2f);
-                    double y = i * (HexMetrics.outerRadius * 1.5f);
+                    double posX = (x + z * 0.5f - z / 2) * (HexMetrics.innerRadius * 2f);
+                    double posZ = z * (HexMetrics.outerRadius * 1.5f);
 
-                    int pixelX = (int)((x / hexWidth) * IMAGE_WIDTH);
-                    int pixelZ = (int)((y / hexWidth) * IMAGE_HEIGHT);
+                    int pixelX = (int)((posX / hexWidth) * IMAGE_WIDTH);
+                    int pixelZ = (int)((posZ / hexWidth) * IMAGE_HEIGHT);
 
                     Color landPixel = landImages[pixelX / 256, pixelZ / 256].GetPixel(pixelX % 256, pixelZ % 256);
                     Color heightPixel = heightImages[pixelX / 256, pixelZ / 256].GetPixel(pixelX % 256, pixelZ % 256);
@@ -76,7 +76,7 @@ namespace GameServer.MapGeneration
                     HexCellData data = new HexCellData((ushort)(height), HexCellBiome.CROP, HexCellRessource.NONE);
                     Console.WriteLine(data.toString());
                     Console.WriteLine("kjdsagds");
-                    map[i, j] = data.toUint();
+                    map[z * cellCountX + x] = data.toUint();
                 }
             }
             return map;
