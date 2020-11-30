@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 using System.Net;
 using System.Net.Sockets;
 using System.Diagnostics;
-using GameServer.Map;
+using GameServer.MapGeneration;
 using GameServer.DataTypes;
 
 
@@ -36,7 +36,8 @@ namespace GameServer
             Console.WriteLine("Starting Server...");
             InitSeverData();
 
-            uint[,] test = GameServer.Map.MapboxHandle.createMap(49.889347, 8.667032, 1, 1);
+            MapGenerator mapGenerator = new MapGenerator(50.355245, 8.190074, 1);
+            mapGenerator.createMap();
 
             tcpListener = new TcpListener(IPAddress.Any, Port);
             tcpListener.Start();

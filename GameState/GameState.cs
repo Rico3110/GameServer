@@ -3,9 +3,7 @@ namespace GameServer.GameState
 {
     public class GameState
     {
-        uint[,] map;
-        uint chunkCountX;
-        uint chunkCountZ;
+        Map map;
         uint buildings;
         uint players;
     }
