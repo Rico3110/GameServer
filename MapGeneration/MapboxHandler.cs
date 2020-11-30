@@ -22,7 +22,7 @@ namespace GameServer.MapGeneration
             {
                 for (int j = -(tilesY - 1) / 2; j < (tilesY + 1) / 2; j++)
                 {
-                    string url = "https://api.mapbox.com/styles/v1" + "/huterguier/ckhklftc13x1k19o1hdnhnn5j" + "/tiles/256/" + ZOOM + "/" + (x + i) + "/" + (y - j) + "?access_token=pk.eyJ1IjoiaHV0ZXJndWllciIsImEiOiJja2g2Nm56cTEwOTV0MnhuemR1bHRianJtIn0.ViSkV78j-GHgC18pMnZfrQ";
+                    string url = "https://api.mapbox.com/styles/v1" + "/huterguier/ckhklftc13x1k19o1hdnhnn5j" + "/tiles/256/" + ZOOM + "/" + (x + i) + "/" + (y + j) + "?access_token=pk.eyJ1IjoiaHV0ZXJndWllciIsImEiOiJja2g2Nm56cTEwOTV0MnhuemR1bHRianJtIn0.ViSkV78j-GHgC18pMnZfrQ";
                     WebRequest request = WebRequest.Create(url);
                     HttpWebResponse response = (HttpWebResponse)request.GetResponse();
                     Image image = Image.FromStream(response.GetResponseStream());
@@ -42,7 +42,7 @@ namespace GameServer.MapGeneration
             {
                 for (int j = -(tilesY - 1) / 2; j < (tilesY + 1) / 2; j++)
                 {
-                    string url = "https://api.mapbox.com/v4/mapbox.terrain-rgb/" + ZOOM + "/" + (x + i) + "/" + (y - j) + ".png?access_token=pk.eyJ1IjoiaHVtYW5pemVyIiwiYSI6ImNraGdkc2t6YzBnYjYyeW1jOTJ0a3kxdGkifQ.SIpcsxeP7Xp2RTxDAEv3wA";
+                    string url = "https://api.mapbox.com/v4/mapbox.terrain-rgb/" + ZOOM + "/" + (x + i) + "/" + (y + j) + ".png?access_token=pk.eyJ1IjoiaHVtYW5pemVyIiwiYSI6ImNraGdkc2t6YzBnYjYyeW1jOTJ0a3kxdGkifQ.SIpcsxeP7Xp2RTxDAEv3wA";
                     WebRequest request = WebRequest.Create(url);
                     HttpWebResponse response = (HttpWebResponse)request.GetResponse();
                     Image image = Image.FromStream(response.GetResponseStream());
