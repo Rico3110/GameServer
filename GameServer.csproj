@@ -45,7 +45,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Client.cs" />
-    <Compile Include="Constants.cs" />
+    <Compile Include="Util\Constants.cs" />
     <Compile Include="DataTypes\BuildingData.cs" />
     <Compile Include="DataTypes\DataTypeHelper.cs" />
     <Compile Include="DataTypes\HexCellData.cs" />
@@ -67,7 +67,7 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="ServerHandle.cs" />
     <Compile Include="ServerSend.cs" />
-    <Compile Include="ThreadManager.cs" />
+    <Compile Include="Util\ThreadManager.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="App.config" />

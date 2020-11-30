@@ -28,6 +28,8 @@ namespace GameServer
         private static Stopwatch sw;
         private static long ping;
 
+        private static uint[] map;
+
         public static void Start(int maxPlayers, int port)
         {
             MaxPlayers = maxPlayers;
@@ -36,8 +38,9 @@ namespace GameServer
             Console.WriteLine("Starting Server...");
             InitSeverData();
 
+            Console.WriteLine("Generating Map...");
             MapGenerator mapGenerator = new MapGenerator(50.355245, 8.190074, 1);
-            mapGenerator.createMap();
+            map = mapGenerator.createMap();
 
             tcpListener = new TcpListener(IPAddress.Any, Port);
             tcpListener.Start();
@@ -92,7 +95,7 @@ namespace GameServer
             Console.WriteLine($"Ping to Client {ClientID}: {ping}ms");
 
             ServerSend.Ping(ClientID, ping);
-            ServerSend.TestArray(ClientID);
+            ServerSend.SendHexData(ClientID, map);
         }
     }
 }
