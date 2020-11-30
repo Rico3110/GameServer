@@ -6,16 +6,16 @@ using System.Threading.Tasks;
 
 namespace GameServer.GameState
 {
-    class Map
+    public class Map
     {
-        uint[,] map;
+        uint[] map;
         int chunkCountX;
         int chunkCountZ;
 
         double lat;
         double lon;
 
-        public Map(uint[,] map, int chunkCountX, int chunkCountZ, double lat, double lon)
+        public Map(uint[] map, int chunkCountX, int chunkCountZ, double lat, double lon)
         {
             this.map = map;
             this.chunkCountX = chunkCountX;
