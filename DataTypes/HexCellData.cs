@@ -3,12 +3,13 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using System.Drawing;
 
 namespace GameServer.DataTypes
 {
     public enum HexCellBiome
     {
-        FOREST, GRASS, CROP, ROCK, SNOW, CITY
+        FOREST, GRASS, CROP, ROCK, SNOW, CITY, WATER
     }
 
     public enum HexCellRessource

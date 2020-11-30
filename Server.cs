@@ -39,8 +39,8 @@ namespace GameServer
             InitSeverData();
 
             Console.WriteLine("Generating Map...");
-            MapGenerator mapGenerator = new MapGenerator(50.355245, 8.190074, 1);
-            //map = mapGenerator.createMap();
+            MapGenerator mapGenerator = new MapGenerator(49.888441, 8.667219, 3);
+            map = mapGenerator.createMap();
 
             tcpListener = new TcpListener(IPAddress.Any, Port);
             tcpListener.Start();

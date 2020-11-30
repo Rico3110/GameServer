@@ -78,7 +78,7 @@ namespace GameServer.MapGeneration
                     Color landPixel = landImages[pixelX / 256, pixelZ / 256].GetPixel(pixelX % 256, pixelZ % 256);
                     Color heightPixel = heightImages[pixelX / 256, pixelZ / 256].GetPixel(pixelX % 256, pixelZ % 256);
                     float height = -10000f + ((float)((heightPixel.R * 256 * 256) + (heightPixel.G * 256) + heightPixel.B) * 0.1f);                    
-                    HexCellData data = new HexCellData((ushort)(height), HexCellBiome.CROP, HexCellRessource.NONE);
+                    HexCellData data = new HexCellData((ushort)(height), fromColorToBiome(landPixel), HexCellRessource.NONE);
                     
                     map[z * cellCountX + x] = data.toUint();
                 }
@@ -90,6 +90,30 @@ namespace GameServer.MapGeneration
         {           
             landImages = MapboxHandler.FetchLandcoverMap(LONGITUDE, LATITUDE, TILE_COUNT_X, TILE_COUNT_Y);
             heightImages = MapboxHandler.FetchHeightMap(LONGITUDE, LATITUDE, TILE_COUNT_X, TILE_COUNT_Y);
+        }
+
+        private HexCellBiome fromColorToBiome(Color color)
+        {
+            if (color.Equals(Color.FromArgb(255, 55, 136, 48)) || color.Equals(Color.FromArgb(255,139,183,128)))
+            {
+                return HexCellBiome.FOREST;
+            }else if (color.Equals(Color.FromArgb(255, 89, 220, 65)))
+            {
+                return HexCellBiome.GRASS;
+            }else if (color.Equals(Color.FromArgb(255, 75, 189, 221)))
+            {
+                return HexCellBiome.WATER;
+            }else if (color.Equals(Color.FromArgb(255, 189, 137, 97)))
+            {
+                return HexCellBiome.CROP;
+            }else if (color.Equals(Color.FromArgb(255, 48, 48, 48)) || color.Equals(Color.FromArgb(255,255,76,77)))
+            {
+                return HexCellBiome.CITY;
+            }
+            else
+            {
+                return HexCellBiome.ROCK;
+            }
         }
     }
 }
