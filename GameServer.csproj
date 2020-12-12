@@ -46,6 +46,17 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Client.cs" />
+    <Compile Include="Shared-Scripts\DataTypes\BuildingData.cs" />
+    <Compile Include="Shared-Scripts\DataTypes\DataTypeHelper.cs" />
+    <Compile Include="Shared-Scripts\DataTypes\HexCellData.cs" />
+    <Compile Include="Shared-Scripts\GameState\GameState.cs" />
+    <Compile Include="Shared-Scripts\GameState\Map.cs" />
+    <Compile Include="Shared-Scripts\HexGrid\HexCell.cs" />
+    <Compile Include="Shared-Scripts\HexGrid\HexCoordinates.cs" />
+    <Compile Include="Shared-Scripts\HexGrid\HexDirection.cs" />
+    <Compile Include="Shared-Scripts\HexGrid\HexGrid.cs" />
+    <Compile Include="Shared-Scripts\HexGrid\HexGridChunk.cs" />
+    <Compile Include="Shared-Scripts\HexGrid\HexMetrics.cs" />
     <Compile Include="Util\Constants.cs" />
     <Compile Include="DataTypes\BuildingData.cs" />
     <Compile Include="DataTypes\DataTypeHelper.cs" />
