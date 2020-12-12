@@ -7,7 +7,7 @@ using System.Net;
 using System.Net.Sockets;
 using System.Diagnostics;
 using GameServer.MapGeneration;
-using GameServer.DataTypes;
+using Shared.DataTypes;
 
 
 

@@ -2,9 +2,9 @@
 using System.Collections.Generic;
 using System.Drawing;
 using System.Numerics;
-using GameServer.GameState;
-using GameServer.HexGrid;
-using GameServer.DataTypes;
+using Shared.GameState;
+using Shared.HexGrid;
+using Shared.DataTypes;
 
 namespace GameServer.MapGeneration
 {
