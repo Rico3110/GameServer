@@ -50,25 +50,27 @@
     <Compile Include="Shared-Scripts\DataTypes\DataTypeHelper.cs" />
     <Compile Include="Shared-Scripts\DataTypes\HexCellData.cs" />
     <Compile Include="Shared-Scripts\GameState\GameState.cs" />
-    <Compile Include="Shared-Scripts\GameState\Map.cs" />
+    <Compile Include="Shared-Scripts\GameState\HexMap.cs" />
     <Compile Include="Shared-Scripts\HexGrid\HexCell.cs" />
     <Compile Include="Shared-Scripts\HexGrid\HexCoordinates.cs" />
     <Compile Include="Shared-Scripts\HexGrid\HexDirection.cs" />
     <Compile Include="Shared-Scripts\HexGrid\HexGrid.cs" />
     <Compile Include="Shared-Scripts\HexGrid\HexGridChunk.cs" />
     <Compile Include="Shared-Scripts\HexGrid\HexMetrics.cs" />
+    <Compile Include="Shared-Scripts\MapGeneration\MapboxHandler.cs" />
+    <Compile Include="Shared-Scripts\MapGeneration\MapGenerator.cs" />
+    <Compile Include="Shared-Scripts\MapGeneration\Slippy.cs" />
     <Compile Include="Util\Constants.cs" />
     <Compile Include="GameLogic.cs" />
-    <Compile Include="MapGeneration\MapboxHandler.cs" />
-    <Compile Include="MapGeneration\MapGenerator.cs" />
-    <Compile Include="MapGeneration\Slippy.cs" />
     <Compile Include="Packet.cs" />
     <Compile Include="Server.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="ServerHandle.cs" />
     <Compile Include="ServerSend.cs" />
+    <Compile Include="Util\Mathf.cs" />
     <Compile Include="Util\ThreadManager.cs" />
+    <Compile Include="Util\Vector3.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="App.config" />

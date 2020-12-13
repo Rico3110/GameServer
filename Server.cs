@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 using System.Net;
 using System.Net.Sockets;
 using System.Diagnostics;
-using GameServer.MapGeneration;
+using Shared.MapGeneration;
 using Shared.DataTypes;
 
 
