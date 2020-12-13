@@ -57,9 +57,9 @@
     <Compile Include="Shared-Scripts\HexGrid\HexGrid.cs" />
     <Compile Include="Shared-Scripts\HexGrid\HexGridChunk.cs" />
     <Compile Include="Shared-Scripts\HexGrid\HexMetrics.cs" />
-    <Compile Include="Shared-Scripts\MapGeneration\MapboxHandler.cs" />
-    <Compile Include="Shared-Scripts\MapGeneration\MapGenerator.cs" />
-    <Compile Include="Shared-Scripts\MapGeneration\Slippy.cs" />
+    <Compile Include="MapGeneration\MapboxHandler.cs" />
+    <Compile Include="MapGeneration\MapGenerator.cs" />
+    <Compile Include="MapGeneration\Slippy.cs" />
     <Compile Include="Util\Constants.cs" />
     <Compile Include="GameLogic.cs" />
     <Compile Include="Packet.cs" />
