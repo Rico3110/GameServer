@@ -9,6 +9,18 @@ using Color = System.Drawing.Color;
 
 namespace Shared.MapGeneration
 {
+    internal struct Cell
+    {
+        public int x;
+        public int z;
+
+        public Cell(int x, int z)
+        {
+            this.x = x;
+            this.z = z;
+        }
+    }
+
     public class MapGenerator
     {      
         private readonly float LONGITUDE;
@@ -37,7 +49,13 @@ namespace Shared.MapGeneration
 
         private Bitmap[,] landImages;
         private Bitmap[,] heightImages;
+        private Bitmap[,] waterImages;
 
+
+        private bool[] visited;
+
+        private Queue<Cell> queue;
+        
 
         public MapGenerator(float lat, float lon, int size)
         {
@@ -59,13 +77,7 @@ namespace Shared.MapGeneration
 
         public HexMap createMap()
         {
-            FetchMaps();
-
-            
-
-            Console.WriteLine("cellCountX: " + CELL_COUNT_X);
-            Console.WriteLine("cellCountZ: " + CELL_COUNT_Z);
-            
+            FetchMaps();           
 
             uint[] data = new uint[CELL_COUNT_X * CELL_COUNT_Z];
 
@@ -75,8 +87,9 @@ namespace Shared.MapGeneration
                 {
                     HexCellBiome biome = parseBiome(x, z);
                     ushort height = parseHeight(x, z);
+                    byte waterDepth = parseWater(x, z);
 
-                    HexCellData cellData = new HexCellData(height, biome, HexCellRessource.NONE);
+                    HexCellData cellData = new HexCellData(height, biome, waterDepth);
                     
                     data[z * CELL_COUNT_X + x] = cellData.toUint();
                 }
@@ -132,11 +145,48 @@ namespace Shared.MapGeneration
             return (ushort)height;
         }
 
+        private byte parseWater(int x, int z){
+            float posX = (x + z * 0.5f - z / 2) * (HexMetrics.innerRadius * 2f) + 0.5f * HexMetrics.outerRadius;
+            float posZ = z * (HexMetrics.outerRadius * 1.5f) + 0.5f * HexMetrics.innerRadius;
+
+            int pixelX = (int)((posX / HEX_WIDTH) * (float)IMAGE_WIDTH);
+            int pixelZ = (int)((posZ / HEX_WIDTH) * (float)IMAGE_HEIGHT);
+
+            Vector3 position = new Vector3(posX, 0, posZ);
+
+            Color waterPixel = landImages[pixelX / 256, pixelZ / 256].GetPixel(pixelX % 256, 255 - pixelZ % 256);
+
+            if (waterPixel == Color.FromArgb(255, 96, 173, 195))
+            {
+                return 1;
+            }
+
+            for (HexDirection d = HexDirection.NE; d <= HexDirection.NW; d++)
+            {
+                position += 0.5f * HexMetrics.GetFirstCorner(d);
+
+                int pixX = (int)((position.x / HEX_WIDTH) * (float)IMAGE_WIDTH);
+                int pixZ = (int)((position.z / HEX_WIDTH) * (float)IMAGE_HEIGHT);
+
+                waterPixel = waterImages[pixX / 256, pixZ / 256].GetPixel(pixX % 256, 255 - pixZ % 256);
+
+                if (waterPixel == Color.FromArgb(255, 96, 173, 195))
+                {
+                    return 1;
+                }
+
+                position -= 0.5f * HexMetrics.GetFirstCorner(d);
+            }          
+            return 0;
+        }
         private void FetchMaps()
         {           
             landImages = MapboxHandler.FetchLandcoverMap(LONGITUDE, LATITUDE, TILE_COUNT_X, TILE_COUNT_Z);
             heightImages = MapboxHandler.FetchHeightMap(LONGITUDE, LATITUDE, TILE_COUNT_X, TILE_COUNT_Z);
+            waterImages = MapboxHandler.FetchWaterMap(LONGITUDE, LATITUDE, TILE_COUNT_X, TILE_COUNT_Z);
         }
+
+
 
         private HexCellBiome fromColorToBiome(Color color)
         {
