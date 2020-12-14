@@ -46,6 +46,9 @@ namespace Shared.MapGeneration
 
 
         private HexMap map;
+        uint[] data;
+
+        List<List<HexCoordinates>> waterAreas;
 
         private Bitmap[,] landImages;
         private Bitmap[,] heightImages;
@@ -53,8 +56,6 @@ namespace Shared.MapGeneration
 
 
         private bool[] visited;
-
-        private Queue<Cell> queue;
         
 
         public MapGenerator(float lat, float lon, int size)
@@ -73,14 +74,16 @@ namespace Shared.MapGeneration
 
             HEX_WIDTH = HexMetrics.innerRadius + 2f * HexMetrics.innerRadius * (float)CELL_COUNT_X;
             HEX_HEIGHT = 0.5f * HexMetrics.outerRadius + 1.5f * HexMetrics.outerRadius * (float)CELL_COUNT_Z;
+
+            data = new uint[CELL_COUNT_X * CELL_COUNT_Z];
+
+            waterAreas = new List<List<HexCoordinates>>();
         }
 
         public HexMap createMap()
         {
             FetchMaps();           
-
-            uint[] data = new uint[CELL_COUNT_X * CELL_COUNT_Z];
-
+         
             for (int z = 0; z < CELL_COUNT_Z; z++)
             {
                 for (int x = 0; x < CELL_COUNT_X; x++)
@@ -179,6 +182,91 @@ namespace Shared.MapGeneration
             }          
             return 0;
         }
+
+
+        public void updateWater(uint[] data)
+        {
+            visited = new bool[CELL_COUNT_X * CELL_COUNT_Z];
+            for (int z = 0; z < CELL_COUNT_Z; z++)
+            {
+                for (int x = 0; x < CELL_COUNT_X; x++)
+                {
+                    if (visited[x + z * CELL_COUNT_X] == false)
+                    {
+                        if (data[x + z * CELL_COUNT_X].toWaterDepth() == 1)
+                        {
+                            waterAreas.Add(findWaterArea(HexCoordinates.FromOffsetCoordinates(x, z)));
+                        }
+                        visited[x + z * CELL_COUNT_X] = true;                       
+                    }
+                }
+            }
+
+            foreach(List<HexCoordinates> area in waterAreas)
+            {
+                adjustWaterArea(area);
+            }
+        }
+
+        private void adjustWaterArea(List<HexCoordinates> area)
+        {
+            uint minElevation = int.MaxValue;
+            HexCoordinates neighbor;
+            uint neighborElevation;
+            foreach (HexCoordinates cell in area)
+            {
+                uint cellElevation = data[cell.ToOffsetX() + cell.ToOffsetZ() * CELL_COUNT_X].toElevation();
+                if (cellElevation < minElevation)
+                {
+                    minElevation = cellElevation;
+                }
+
+                for (HexDirection d = HexDirection.NE; d <= HexDirection.NW; d++)
+                {
+                    neighbor = cell.InDirection(d);
+                    neighborElevation = data[neighbor.ToOffsetX() + neighbor.ToOffsetZ() * CELL_COUNT_X].toElevation();
+                    if (neighborElevation < minElevation)
+                    {
+                        minElevation = neighborElevation;
+                    }
+                }
+            }
+
+            foreach (HexCoordinates cell in area)
+            {
+                uint cellData = data[cell.ToOffsetX() + cell.ToOffsetZ() * CELL_COUNT_X];
+                cellData = cellData.SetElevation(minElevation);
+                data[cell.ToOffsetX() + cell.ToOffsetZ() * CELL_COUNT_X] = cellData;
+            }
+        }
+
+        public List<HexCoordinates> findWaterArea(HexCoordinates coordinate)
+        {
+            Queue<HexCoordinates> Queue = new Queue<HexCoordinates>();
+            Queue.Enqueue(coordinate);
+
+            List<HexCoordinates> area = new List<HexCoordinates>();
+
+            HexCoordinates current;
+            HexCoordinates neighbor;
+            while (Queue.Count != 0)
+            {
+                current = Queue.Dequeue();
+                area.Add(current);               
+                for (HexDirection d = HexDirection.NE; d <= HexDirection.NW; d++)
+                {
+                    neighbor = current.InDirection(d);                   
+                    if (data[neighbor.ToOffsetX() + neighbor.ToOffsetZ() * CELL_COUNT_X].toWaterDepth() == 1 && 
+                        !visited[neighbor.ToOffsetX() + neighbor.ToOffsetZ() * CELL_COUNT_X])
+                    {
+                        Queue.Enqueue(neighbor);
+                        visited[neighbor.ToOffsetX() + neighbor.ToOffsetZ() * CELL_COUNT_X] = true;
+                    }
+                }
+            }
+            return area;
+        }
+
         private void FetchMaps()
         {           
             landImages = MapboxHandler.FetchLandcoverMap(LONGITUDE, LATITUDE, TILE_COUNT_X, TILE_COUNT_Z);
