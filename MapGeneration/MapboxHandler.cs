@@ -64,7 +64,7 @@ namespace Shared.MapGeneration
             {
                 for (int j = -(tilesY - 1) / 2; j < (tilesY + 1) / 2; j++)
                 {
-                    string url = "https://api.mapbox.com/styles/v1" + "/huterguier/ckhl1b3ku05oz19o0n6bv53p4" + "/tiles/256/" + ZOOM + "/" + (x + i) + "/" + (y - j) + "?access_token=pk.eyJ1IjoiaHV0ZXJndWllciIsImEiOiJja2g2Nm56cTEwOTV0MnhuemR1bHRianJtIn0.ViSkV78j-GHgC18pMnZfrQ";
+                    string url = "https://api.mapbox.com/styles/v1" + "/huterguier/ckip28dz75c5s17p98d8lb0gb" + "/tiles/256/" + ZOOM + "/" + (x + i) + "/" + (y - j) + "?access_token=pk.eyJ1IjoiaHV0ZXJndWllciIsImEiOiJja2g2Nm56cTEwOTV0MnhuemR1bHRianJtIn0.ViSkV78j-GHgC18pMnZfrQ";
                     WebRequest request = WebRequest.Create(url);
                     HttpWebResponse response = (HttpWebResponse)request.GetResponse();
                     Image image = Image.FromStream(response.GetResponseStream());

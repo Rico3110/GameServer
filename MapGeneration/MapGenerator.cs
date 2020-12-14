@@ -90,13 +90,15 @@ namespace Shared.MapGeneration
                 {
                     HexCellBiome biome = parseBiome(x, z);
                     ushort height = parseHeight(x, z);
-                    byte waterDepth = parseWater(x, z);
+                    byte waterDepth = parseWater(x, z);                   
 
                     HexCellData cellData = new HexCellData(height, biome, waterDepth);
                     
                     data[z * CELL_COUNT_X + x] = cellData.toUint();
                 }
             }
+
+            updateWater();
 
             int chunkCountX = CHUNKS_PER_TILE_X * TILE_COUNT_X;
             int chunkCountZ = CHUNKS_PER_TILE_Z * TILE_COUNT_Z;
@@ -157,13 +159,13 @@ namespace Shared.MapGeneration
 
             Vector3 position = new Vector3(posX, 0, posZ);
 
-            Color waterPixel = landImages[pixelX / 256, pixelZ / 256].GetPixel(pixelX % 256, 255 - pixelZ % 256);
+            Color waterPixel = waterImages[pixelX / 256, pixelZ / 256].GetPixel(pixelX % 256, 255 - pixelZ % 256);
 
-            if (waterPixel == Color.FromArgb(255, 96, 173, 195))
+            if (waterPixel == Color.FromArgb(255, 59, 176, 170))
             {
                 return 1;
             }
-
+            
             for (HexDirection d = HexDirection.NE; d <= HexDirection.NW; d++)
             {
                 position += 0.5f * HexMetrics.GetFirstCorner(d);
@@ -172,8 +174,8 @@ namespace Shared.MapGeneration
                 int pixZ = (int)((position.z / HEX_WIDTH) * (float)IMAGE_HEIGHT);
 
                 waterPixel = waterImages[pixX / 256, pixZ / 256].GetPixel(pixX % 256, 255 - pixZ % 256);
-
-                if (waterPixel == Color.FromArgb(255, 96, 173, 195))
+                
+                if (waterPixel == Color.FromArgb(255, 59, 176, 170))
                 {
                     return 1;
                 }
@@ -184,7 +186,7 @@ namespace Shared.MapGeneration
         }
 
 
-        public void updateWater(uint[] data)
+        public void updateWater()
         {
             visited = new bool[CELL_COUNT_X * CELL_COUNT_Z];
             for (int z = 0; z < CELL_COUNT_Z; z++)
@@ -201,8 +203,8 @@ namespace Shared.MapGeneration
                     }
                 }
             }
-
-            foreach(List<HexCoordinates> area in waterAreas)
+            
+            foreach (List<HexCoordinates> area in waterAreas)
             {
                 adjustWaterArea(area);
             }
@@ -231,7 +233,7 @@ namespace Shared.MapGeneration
                     }
                 }
             }
-
+            Console.WriteLine(minElevation);
             foreach (HexCoordinates cell in area)
             {
                 uint cellData = data[cell.ToOffsetX() + cell.ToOffsetZ() * CELL_COUNT_X];
