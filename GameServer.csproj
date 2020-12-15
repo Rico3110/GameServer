@@ -49,6 +49,7 @@
     <Compile Include="Shared-Scripts\DataTypes\BuildingData.cs" />
     <Compile Include="Shared-Scripts\DataTypes\DataTypeHelper.cs" />
     <Compile Include="Shared-Scripts\DataTypes\HexCellData.cs" />
+    <Compile Include="Shared-Scripts\GameLogic\GameLogic.cs" />
     <Compile Include="Shared-Scripts\GameState\GameState.cs" />
     <Compile Include="Shared-Scripts\GameState\HexMap.cs" />
     <Compile Include="Shared-Scripts\HexGrid\HexCell.cs" />
