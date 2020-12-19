@@ -32,6 +32,9 @@ namespace Shared.MapGeneration
         private readonly int IMAGE_WIDTH;
         private readonly int IMAGE_HEIGHT;
 
+        private readonly int CHUNK_COUNT_X;
+        private readonly int CHUNK_COUNT_Z;
+
         private readonly int CELL_COUNT_X;
         private readonly int CELL_COUNT_Z;
 
@@ -46,14 +49,13 @@ namespace Shared.MapGeneration
 
 
         private HexMap map;
-        uint[] data;
+        private HexGrid.HexGrid hexGrid;
 
-        List<List<HexCoordinates>> waterAreas;
+        List<List<HexCell>> waterAreas;
 
         private Bitmap[,] landImages;
         private Bitmap[,] heightImages;
         private Bitmap[,] waterImages;
-
 
         private bool[] visited;
         
@@ -69,18 +71,21 @@ namespace Shared.MapGeneration
             IMAGE_WIDTH = size * SINGLE_IMAGE_WIDTH;
             IMAGE_HEIGHT = size * SINGLE_IMAGE_HEIGHT;
 
-            CELL_COUNT_X = TILE_COUNT_X * CHUNKS_PER_TILE_X * HexMetrics.chunkSizeX;
-            CELL_COUNT_Z = TILE_COUNT_Z * CHUNKS_PER_TILE_Z * HexMetrics.chunkSizeZ;
+            CHUNK_COUNT_X = TILE_COUNT_X * CHUNKS_PER_TILE_X;
+            CHUNK_COUNT_Z = TILE_COUNT_Z * CHUNKS_PER_TILE_Z;
+
+            CELL_COUNT_X = CHUNK_COUNT_X * HexMetrics.chunkSizeX;
+            CELL_COUNT_Z = CHUNK_COUNT_Z * HexMetrics.chunkSizeZ;
 
             HEX_WIDTH = HexMetrics.innerRadius + 2f * HexMetrics.innerRadius * (float)CELL_COUNT_X;
             HEX_HEIGHT = 0.5f * HexMetrics.outerRadius + 1.5f * HexMetrics.outerRadius * (float)CELL_COUNT_Z;
 
-            data = new uint[CELL_COUNT_X * CELL_COUNT_Z];
+            hexGrid = new HexGrid.HexGrid(CHUNK_COUNT_X, CHUNK_COUNT_Z);
 
-            waterAreas = new List<List<HexCoordinates>>();
+            waterAreas = new List<List<HexCell>>();
         }
 
-        public HexMap createMap()
+        public HexGrid.HexGrid createMap()
         {
             FetchMaps();           
          
@@ -91,19 +96,18 @@ namespace Shared.MapGeneration
                     HexCellBiome biome = parseBiome(x, z);
                     ushort height = parseHeight(x, z);
                     byte waterDepth = parseWater(x, z);                   
-
+                    if(waterDepth != 0)
+                    {
+                        biome = HexCellBiome.WATER;
+                    }
                     HexCellData cellData = new HexCellData(height, biome, waterDepth);
-                    
-                    data[z * CELL_COUNT_X + x] = cellData.toUint();
+                    hexGrid.GetCell(x, z).Data = cellData;                    
                 }
             }
 
             updateWater();
-
-            int chunkCountX = CHUNKS_PER_TILE_X * TILE_COUNT_X;
-            int chunkCountZ = CHUNKS_PER_TILE_Z * TILE_COUNT_Z;
-            
-            return new HexMap(data, chunkCountX, chunkCountZ, LATITUDE, LONGITUDE);
+            UpdateRocks();
+            return hexGrid;
         }
 
         private HexCellBiome parseBiome(int x, int z)
@@ -159,11 +163,13 @@ namespace Shared.MapGeneration
 
             Vector3 position = new Vector3(posX, 0, posZ);
 
+            int waterCount = 0;
+
             Color waterPixel = waterImages[pixelX / 256, pixelZ / 256].GetPixel(pixelX % 256, 255 - pixelZ % 256);
 
             if (waterPixel == Color.FromArgb(255, 59, 176, 170))
             {
-                return 1;
+                waterCount++;
             }
             
             for (HexDirection d = HexDirection.NE; d <= HexDirection.NW; d++)
@@ -177,96 +183,120 @@ namespace Shared.MapGeneration
                 
                 if (waterPixel == Color.FromArgb(255, 59, 176, 170))
                 {
-                    return 1;
+                    waterCount++;
                 }
 
                 position -= 0.5f * HexMetrics.GetFirstCorner(d);
-            }          
+            }    
+            
+            if(waterCount > 1)
+            {
+                return 1;
+            }
             return 0;
         }
-
 
         public void updateWater()
         {
             visited = new bool[CELL_COUNT_X * CELL_COUNT_Z];
+
             for (int z = 0; z < CELL_COUNT_Z; z++)
             {
                 for (int x = 0; x < CELL_COUNT_X; x++)
                 {
+                    HexCell cell = hexGrid.GetCell(x, z);
                     if (visited[x + z * CELL_COUNT_X] == false)
                     {
-                        if (data[x + z * CELL_COUNT_X].toWaterDepth() == 1)
+                        if (cell.Data.WaterDepth == 1)
                         {
-                            waterAreas.Add(findWaterArea(HexCoordinates.FromOffsetCoordinates(x, z)));
+                            waterAreas.Add(findWaterArea(cell));
                         }
                         visited[x + z * CELL_COUNT_X] = true;                       
                     }
                 }
             }
             
-            foreach (List<HexCoordinates> area in waterAreas)
+            foreach (List<HexCell> area in waterAreas)
             {
                 adjustWaterArea(area);
             }
         }
 
-        private void adjustWaterArea(List<HexCoordinates> area)
+        private void adjustWaterArea(List<HexCell> area)
         {
             uint minElevation = int.MaxValue;
-            HexCoordinates neighbor;
+            HexCell neighbor;
             uint neighborElevation;
-            foreach (HexCoordinates cell in area)
+            foreach (HexCell cell in area)
             {
-                uint cellElevation = data[cell.ToOffsetX() + cell.ToOffsetZ() * CELL_COUNT_X].toElevation();
+                uint cellElevation = cell.Elevation;
                 if (cellElevation < minElevation)
                 {
                     minElevation = cellElevation;
                 }
-
+                
                 for (HexDirection d = HexDirection.NE; d <= HexDirection.NW; d++)
                 {
-                    neighbor = cell.InDirection(d);
-                    neighborElevation = data[neighbor.ToOffsetX() + neighbor.ToOffsetZ() * CELL_COUNT_X].toElevation();
-                    if (neighborElevation < minElevation)
+                    neighbor = cell.GetNeighbor(d);
+                    if(neighbor != null)
                     {
-                        minElevation = neighborElevation;
-                    }
+                        neighborElevation = neighbor.Elevation;
+                        if (neighborElevation < minElevation)
+                        {
+                            minElevation = neighborElevation;
+                        }
+                    }                    
                 }
             }
             Console.WriteLine(minElevation);
-            foreach (HexCoordinates cell in area)
+            foreach (HexCell cell in area)
             {
-                uint cellData = data[cell.ToOffsetX() + cell.ToOffsetZ() * CELL_COUNT_X];
-                cellData = cellData.SetElevation(minElevation);
-                data[cell.ToOffsetX() + cell.ToOffsetZ() * CELL_COUNT_X] = cellData;
+                HexCellData cellData = cell.Data;         
+                cell.Data = new HexCellData((ushort)minElevation, cell.Data.Biome, cell.Data.WaterDepth);
             }
         }
 
-        public List<HexCoordinates> findWaterArea(HexCoordinates coordinate)
+        public List<HexCell> findWaterArea(HexCell cell)
         {
-            Queue<HexCoordinates> Queue = new Queue<HexCoordinates>();
-            Queue.Enqueue(coordinate);
+            Queue<HexCell> Queue = new Queue<HexCell>();
+            Queue.Enqueue(cell);
 
-            List<HexCoordinates> area = new List<HexCoordinates>();
+            List<HexCell> area = new List<HexCell>();
 
-            HexCoordinates current;
-            HexCoordinates neighbor;
+            HexCell current;
+            HexCell neighbor;
             while (Queue.Count != 0)
             {
                 current = Queue.Dequeue();
                 area.Add(current);               
                 for (HexDirection d = HexDirection.NE; d <= HexDirection.NW; d++)
                 {
-                    neighbor = current.InDirection(d);                   
-                    if (data[neighbor.ToOffsetX() + neighbor.ToOffsetZ() * CELL_COUNT_X].toWaterDepth() == 1 && 
-                        !visited[neighbor.ToOffsetX() + neighbor.ToOffsetZ() * CELL_COUNT_X])
+                    neighbor = current.GetNeighbor(d);             
+                    if (neighbor != null &&
+                        neighbor.Data.WaterDepth == 1 && 
+                        !visited[neighbor.coordinates.ToOffsetX() + neighbor.coordinates.ToOffsetZ() * CELL_COUNT_X])
                     {
                         Queue.Enqueue(neighbor);
-                        visited[neighbor.ToOffsetX() + neighbor.ToOffsetZ() * CELL_COUNT_X] = true;
+                        visited[neighbor.coordinates.ToOffsetX() + neighbor.coordinates.ToOffsetZ() * CELL_COUNT_X] = true;
                     }
                 }
             }
             return area;
+        }
+
+        private void UpdateRocks()
+        {
+            foreach (HexCell cell in hexGrid.cells)
+            {
+                for (HexDirection d = HexDirection.NE; d <= HexDirection.NW; d++)
+                {     
+                    if (cell.GetElevationDifference(d) > 40)
+                    {
+                        HexCellData data = cell.Data;
+                        cell.Data = new HexCellData(data.Elevation, HexCellBiome.ROCK, data.WaterDepth);
+                    }
+                }
+            }
         }
 
         private void FetchMaps()
