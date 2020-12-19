@@ -6,8 +6,9 @@ using System.Threading.Tasks;
 using System.Net;
 using System.Net.Sockets;
 using System.Diagnostics;
-using GameServer.Map;
-using GameServer.DataTypes;
+using Shared.MapGeneration;
+using Shared.DataTypes;
+using Shared.GameState;
 
 
 
@@ -28,6 +29,8 @@ namespace GameServer
         private static Stopwatch sw;
         private static long ping;
 
+        private static HexMap map;
+
         public static void Start(int maxPlayers, int port)
         {
             MaxPlayers = maxPlayers;
@@ -36,16 +39,16 @@ namespace GameServer
             Console.WriteLine("Starting Server...");
             InitSeverData();
 
+            Console.WriteLine("Generating Map...");
+            MapGenerator mapGenerator = new MapGenerator(50.392f, 8.065f, 5);
+            map = mapGenerator.createMap();
+           
+
             tcpListener = new TcpListener(IPAddress.Any, Port);
             tcpListener.Start();
             tcpListener.BeginAcceptTcpClient(new AsyncCallback(TCPConnectCallback), null);
 
-            Console.WriteLine($"Server Started on {Port}.");
-
-            //Map.Map map = new Map.Map();
-            uint[,] test = GameServer.Map.MapboxHandle.createMap(49.889347, 8.667032, 1, 1);
-            HexCellData tmp = new HexCellData(test[0, 0]);
-            Console.WriteLine(tmp.toString());
+            Console.WriteLine($"Server Started on {Port}.");                   
         }
 
         private static void TCPConnectCallback(IAsyncResult result)
@@ -94,7 +97,7 @@ namespace GameServer
             Console.WriteLine($"Ping to Client {ClientID}: {ping}ms");
 
             ServerSend.Ping(ClientID, ping);
-            ServerSend.TestArray(ClientID);
+            ServerSend.SendHexMap(ClientID, map);
         }
     }
 }

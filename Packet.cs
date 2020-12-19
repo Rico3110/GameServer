@@ -10,6 +10,7 @@ namespace GameServer
         welcome = 1,
         ping = 2,
         testArray = 3,
+        hexMap = 4,
         hexData = 10       
     }
 
@@ -19,6 +20,7 @@ namespace GameServer
         welcomeReceived = 1,
         ping = 2,
         testArray = 3,
+        hexMap = 4,
         hexData = 10
     }
 

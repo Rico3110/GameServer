@@ -1,6 +1,10 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <Project ToolsVersion="Current" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <PropertyGroup>
+<<<<<<< HEAD
     <ProjectView>ProjectFiles</ProjectView>
+=======
+    <ProjectView>ShowAllFiles</ProjectView>
+>>>>>>> f215fb3d5390b91877d912db7ddcbaeb557e7efb
   </PropertyGroup>
 </Project>
