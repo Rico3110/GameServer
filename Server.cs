@@ -46,8 +46,10 @@ namespace GameServer
             Console.WriteLine("Generating Map...");
             MapGenerator mapGenerator = new MapGenerator(50.392f, 8.065f, 5);
 
+            HexMap tmpMap = mapGenerator.createMap();
+            map = tmpMap;
             gameLogic = new Shared.GameLogic.GameLogic();
-            gameLogic.grid = new HexGrid(mapGenerator.createMap());
+            gameLogic.grid = new HexGrid(map);
            
 
             tcpListener = new TcpListener(IPAddress.Any, Port);
