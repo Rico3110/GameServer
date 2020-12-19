@@ -1,0 +1,3 @@
+[submodule "Shared-Scripts"]
+	path = Shared-Scripts
+	url = git@github.com:Rico3110/Shared-Scripts.git
