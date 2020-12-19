@@ -9,6 +9,8 @@ using System.Diagnostics;
 using Shared.MapGeneration;
 using Shared.DataTypes;
 using Shared.GameState;
+using Shared.GameLogic;
+using Shared.HexGrid;
 
 
 
@@ -30,6 +32,8 @@ namespace GameServer
         private static long ping;
 
         private static HexMap map;
+        public static HexGrid grid;
+        public static Shared.GameLogic.GameLogic gameLogic;
 
         public static void Start(int maxPlayers, int port)
         {
@@ -41,7 +45,9 @@ namespace GameServer
 
             Console.WriteLine("Generating Map...");
             MapGenerator mapGenerator = new MapGenerator(50.392f, 8.065f, 5);
-            map = mapGenerator.createMap();
+
+            gameLogic = new Shared.GameLogic.GameLogic();
+            gameLogic.grid = new HexGrid(mapGenerator.createMap());
            
 
             tcpListener = new TcpListener(IPAddress.Any, Port);
@@ -78,7 +84,9 @@ namespace GameServer
 
             packetHandlers = new Dictionary<int, PacketHandler>()
             {
-                {(int)ClientPackets.welcomeReceived, ServerHandle.WelcomeRecieved}
+                {(int)ClientPackets.welcomeReceived, ServerHandle.WelcomeRecieved},
+                {(int)ClientPackets.requestBuildingData, ServerHandle.SendBuildingData},
+                {(int)ClientPackets.requestBuildBuilding, ServerHandle.TryBuildBuilding}
             };
             Console.WriteLine($"Initialized packets");
         }

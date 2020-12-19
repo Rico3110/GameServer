@@ -1,6 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Text;
+using Shared.HexGrid;
+using Shared.DataTypes;
 
 namespace GameServer
 {
@@ -11,7 +13,10 @@ namespace GameServer
         ping = 2,
         testArray = 3,
         hexMap = 4,
-        hexData = 10       
+        hexData = 10,
+        sendBuildingData = 11,
+        hexCell = 13
+
     }
 
     /// <summary>Sent from client to server.</summary>
@@ -21,7 +26,9 @@ namespace GameServer
         ping = 2,
         testArray = 3,
         hexMap = 4,
-        hexData = 10
+        hexData = 10,
+        requestBuildingData = 11,
+        requestBuildBuilding = 12,
     }
 
     public class Packet : IDisposable
@@ -181,6 +188,29 @@ namespace GameServer
             Write(_value.Length); // Add the length of the string to the packet
             buffer.AddRange(Encoding.ASCII.GetBytes(_value)); // Add the string itself
         }
+        /// <summary>Adds a HexCoordinates to the packet.</summary>
+        /// <param name="_value">The HexCoordinate to add.</param>
+        public void Write(HexCoordinates _value)
+        {
+            Write(_value.X);
+            Write(_value.Z);
+        }
+        /// <summary>Adds a BuildingType to the packet.</summary>
+        /// <param name="_value">The BuildingType to add.</param>
+        public void Write(BuildingType _value)
+        {
+            buffer.AddRange(BitConverter.GetBytes((byte)_value));
+        }
+        /// <summary>Adds a BuildingData to the packet.</summary>
+        /// <param name="_value">The BuildingData to add.</param>
+        public void Write(BuildingData _value)
+        {
+            Write(_value.coordinate);
+            Write(_value.Type);
+            Write(_value.TeamID);
+            Write(_value.Level);
+        }
+
         #endregion
 
         #region Read Data
@@ -392,6 +422,71 @@ namespace GameServer
             catch
             {
                 throw new Exception("Could not read value of type 'string'!");
+            }
+        }
+
+        /// <summary>Reads a HexCoordinates from the packet.</summary>
+        /// <param name="_moveReadPos">Whether or not to move the buffer's read position.</param>
+        public HexCoordinates ReadHexCoordinates(bool _moveReadPos = true)
+        {
+            try
+            {
+                int x = ReadInt();
+                int z = ReadInt();
+                HexCoordinates _value = new HexCoordinates(x, z);
+                if (_moveReadPos)
+                {
+                    readPos += 8; // Increase readPos by the length of the HexCoordinates
+                }
+                return _value; // Return the HexCoordinates
+            }
+            catch
+            {
+                throw new Exception("Could not read value of type 'HexCoordinates'!");
+            }
+        }
+        /// <summary>Reads a BuildingType from the packet.</summary>
+        /// <param name="_moveReadPos">Whether or not to move the buffer's read position.</param>
+        public BuildingType ReadBuildingType(bool _moveReadPos = true)
+        {
+            try
+            {
+                BuildingType _value = (BuildingType)ReadByte();
+                if (_moveReadPos)
+                {
+                    readPos += 1; // Increase readPos by the length of the BuildingType
+                }
+                return _value; // Return the BuildingType
+            }
+            catch
+            {
+                throw new Exception("Could not read value of type 'BuildingType'!");
+            }
+        }
+        /// <summary>Reads a BuildingData from the packet.</summary>
+        /// <param name="_moveReadPos">Whether or not to move the buffer's read position.</param>
+        public BuildingData ReadBuildingData(bool _moveReadPos = true)
+        {
+            try
+            {
+                HexCoordinates coords = ReadHexCoordinates();
+                BuildingType type = ReadBuildingType();
+                byte teamID = ReadByte();
+                byte level = ReadByte();
+
+                BuildingData _value = new BuildingData();
+                _value.coordinate = coords;
+                _value.TeamID = teamID;
+                _value.Level = level;
+                if (_moveReadPos)
+                {
+                    readPos += 11; // Increase readPos by the length of the BuildingData
+                }
+                return _value; // Return the BuildingData
+            }
+            catch
+            {
+                throw new Exception("Could not read value of type 'BuildingData'!");
             }
         }
         #endregion

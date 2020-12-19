@@ -3,6 +3,8 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using Shared.HexGrid;
+using Shared.DataTypes;
 
 namespace GameServer
 {
@@ -23,6 +25,21 @@ namespace GameServer
 
             //Stop Timer
             Server.StopPingTest(fromClient);
+        }
+
+        public static void SendBuildingData(int fromClient, Packet packet)
+        {
+            HexCoordinates coordinates = packet.ReadHexCoordinates();
+        }
+
+        public static void TryBuildBuilding(int fromClient, Packet packet)
+        {
+            BuildingData buildingData = packet.ReadBuildingData();
+            if (Server.gameLogic.verifyBuild(buildingData))
+            {
+                HexCell newCell = Server.gameLogic.applyBuild(buildingData);
+                ServerSend.SendTCPDataToAll(ServerSend.createBuildingDataPacket(newCell.Building));
+            }
         }
     }
 }

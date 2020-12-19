@@ -4,6 +4,8 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using Shared.GameState;
+using Shared.DataTypes;
+using Shared.HexGrid;
 
 namespace GameServer
 {
@@ -111,6 +113,30 @@ namespace GameServer
                 packet.Write(toClient);
 
                 SendTCPData(toClient, packet);
+            }
+        }
+
+        public static void SendBuilding(int toClient, BuildingData building)
+        {
+            using (Packet packet = new Packet((int)ServerPackets.sendBuildingData))
+            {
+                packet.Write((byte)building.Type);
+                packet.Write(building.TeamID);
+                packet.Write(building.Level);
+                packet.Write(building.coordinate);
+
+                packet.Write(toClient);
+
+                SendTCPData(toClient, packet);
+            }
+        }
+
+        public static Packet createBuildingDataPacket(BuildingData buildingData)
+        {
+            using (Packet packet = new Packet((int)ServerPackets.hexCell))
+            {
+                packet.Write(buildingData);
+                return packet;
             }
         }
     }
