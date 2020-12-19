@@ -10,6 +10,7 @@ using Shared.MapGeneration;
 using Shared.DataTypes;
 using Shared.GameState;
 using Shared.Communication;
+using Shared.HexGrid;
 
 
 
@@ -30,7 +31,7 @@ namespace GameServer
         private static Stopwatch sw;
         private static long ping;
 
-        private static HexMap map;
+        private static HexGrid grid;
 
         public static void Start(int maxPlayers, int port)
         {
@@ -41,8 +42,8 @@ namespace GameServer
             InitSeverData();
 
             Console.WriteLine("Generating Map...");
-            MapGenerator mapGenerator = new MapGenerator(50.392f, 8.065f, 5);
-            map = mapGenerator.createMap();
+            MapGenerator mapGenerator = new MapGenerator(50.369978f, 7.992495f, 5);
+            grid = mapGenerator.createMap();
            
 
             tcpListener = new TcpListener(IPAddress.Any, Port);
@@ -98,7 +99,7 @@ namespace GameServer
             Console.WriteLine($"Ping to Client {ClientID}: {ping}ms");
 
             ServerSend.Ping(ClientID, ping);
-            ServerSend.SendHexMap(ClientID, map);
+            ServerSend.SendHexMap(ClientID, new HexMap(grid.SerializeData(), grid.chunkCountX, grid.chunkCountZ, 0, 0));
         }
     }
 }
