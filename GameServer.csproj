@@ -46,6 +46,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Client.cs" />
+    <Compile Include="Shared-Scripts\Communication\Packet.cs" />
     <Compile Include="Shared-Scripts\DataTypes\BuildingData.cs" />
     <Compile Include="Shared-Scripts\DataTypes\DataTypeHelper.cs" />
     <Compile Include="Shared-Scripts\DataTypes\HexCellData.cs" />
@@ -63,7 +64,6 @@
     <Compile Include="MapGeneration\Slippy.cs" />
     <Compile Include="Util\Constants.cs" />
     <Compile Include="GameLogic.cs" />
-    <Compile Include="Packet.cs" />
     <Compile Include="Server.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />

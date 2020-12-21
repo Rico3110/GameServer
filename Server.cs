@@ -11,6 +11,7 @@ using Shared.DataTypes;
 using Shared.GameState;
 using Shared.GameLogic;
 using Shared.HexGrid;
+using Shared.Communication;
 
 
 
@@ -44,12 +45,10 @@ namespace GameServer
             InitSeverData();
 
             Console.WriteLine("Generating Map...");
-            MapGenerator mapGenerator = new MapGenerator(50.392f, 8.065f, 5);
+            MapGenerator mapGenerator = new MapGenerator(50.392f, 8.065f, 3);
 
-            HexMap tmpMap = mapGenerator.createMap();
-            map = tmpMap;
             gameLogic = new Shared.GameLogic.GameLogic();
-            gameLogic.grid = new HexGrid(map);
+            gameLogic.grid = mapGenerator.createMap();
            
 
             tcpListener = new TcpListener(IPAddress.Any, Port);
@@ -107,7 +106,7 @@ namespace GameServer
             Console.WriteLine($"Ping to Client {ClientID}: {ping}ms");
 
             ServerSend.Ping(ClientID, ping);
-            ServerSend.SendHexMap(ClientID, map);
+            ServerSend.SendHexMap(ClientID, new HexMap(gameLogic.grid.SerializeData(), gameLogic.grid.chunkCountX, gameLogic.grid.chunkCountZ, 0, 0));
         }
     }
 }
