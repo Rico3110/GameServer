@@ -42,7 +42,7 @@ namespace GameServer
             InitSeverData();
 
             Console.WriteLine("Generating Map...");
-            MapGenerator mapGenerator = new MapGenerator(50.369978f, 7.992495f, 5);
+            MapGenerator mapGenerator = new MapGenerator(49.872831f, 8.669843f, 5);
             grid = mapGenerator.createMap();
            
 
