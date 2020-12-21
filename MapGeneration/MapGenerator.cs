@@ -313,6 +313,7 @@ namespace Shared.MapGeneration
         {
             foreach (HexCell cell in hexGrid.cells)
             {
+                Console.WriteLine(cell.Data.Biome);
                 if(cell.Data.Biome != HexCellBiome.WATER)
                 {
                     for (HexDirection d = HexDirection.NE; d <= HexDirection.NW; d++)
@@ -344,7 +345,7 @@ namespace Shared.MapGeneration
                 return HexCellBiome.FOREST;
             }else if(color.Equals(Color.FromArgb(255, 139, 183, 128)))
             {
-                return HexCellBiome.CROP;
+                return HexCellBiome.SCRUB;
             }else if (color.Equals(Color.FromArgb(255, 89, 220, 65)))
             {
                 return HexCellBiome.GRASS;
