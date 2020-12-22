@@ -134,11 +134,9 @@ namespace GameServer
 
         public static Packet createBuildingDataPacket(BuildingData buildingData)
         {
-            using (Packet packet = new Packet((int)ServerPackets.hexCell))
-            {
-                packet.Write(buildingData);
-                return packet;
-            }
+            Packet packet = new Packet((int)ServerPackets.sendBuildingData);
+            packet.Write(buildingData);
+            return packet;
         }
     }
 }

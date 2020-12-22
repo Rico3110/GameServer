@@ -45,7 +45,7 @@ namespace GameServer
             InitSeverData();
 
             Console.WriteLine("Generating Map...");
-            MapGenerator mapGenerator = new MapGenerator(50.392f, 8.065f, 3);
+            MapGenerator mapGenerator = new MapGenerator(50.392f, 8.065f, 1);
 
             gameLogic = new Shared.GameLogic.GameLogic();
             gameLogic.grid = mapGenerator.createMap();

@@ -35,6 +35,7 @@ namespace GameServer
 
         public static void TryBuildBuilding(int fromClient, Packet packet)
         {
+            int clientIDCheck = packet.ReadInt();
             BuildingData buildingData = packet.ReadBuildingData();
             if (Server.gameLogic.verifyBuild(buildingData))
             {
