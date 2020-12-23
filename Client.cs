@@ -49,6 +49,10 @@ namespace GameServer
                 stream.BeginRead(recieveBuffer, 0, dataBufferSize, RecieveCallback, null);
 
                 ServerSend.Welcome(id, "Welcome to the server!");
+                using (Packet newPacket = ServerSend.createHexGridPacket(Server.gameLogic.grid))
+                {
+                    ServerSend.SendTCPData(id, newPacket);
+                }
             }
 
             public void SendData(Packet packet)

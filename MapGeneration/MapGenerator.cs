@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Drawing;
-using Shared.GameState;
 using Shared.HexGrid;
 using Shared.DataTypes;
 using UnityEngine;
@@ -48,7 +47,6 @@ namespace Shared.MapGeneration
         private const int SINGLE_IMAGE_HEIGHT = 256;
 
 
-        private HexMap map;
         private HexGrid.HexGrid hexGrid;
 
         List<List<HexCell>> waterAreas;

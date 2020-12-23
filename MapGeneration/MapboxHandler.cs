@@ -4,7 +4,6 @@ using System.Net;
 using System.Drawing;
 using Shared.DataTypes;
 using Shared.HexGrid;
-using Shared.GameState;
 using Shared.MapGeneration;
 
 namespace Shared.MapGeneration

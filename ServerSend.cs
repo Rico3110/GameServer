@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using Shared.GameState;
 using Shared.Communication;
 using Shared.DataTypes;
 using Shared.HexGrid;
@@ -94,23 +93,6 @@ namespace GameServer
             using (Packet packet = new Packet((int)ServerPackets.hexData))
             {
                 packet.Write(data);
-                packet.Write(toClient);
-
-                SendTCPData(toClient, packet);
-            }
-        }
-
-        public static void SendHexMap(int toClient, HexMap hexMap)
-        {
-            using (Packet packet = new Packet((int)ServerPackets.hexMap))
-            {
-                packet.Write(hexMap.data);
-                packet.Write(hexMap.chunkCountX);
-                packet.Write(hexMap.chunkCountZ);
-
-                packet.Write(hexMap.lat);
-                packet.Write(hexMap.lon);
-
                 packet.Write(toClient);
 
                 SendTCPData(toClient, packet);

@@ -8,7 +8,6 @@ using System.Net.Sockets;
 using System.Diagnostics;
 using Shared.MapGeneration;
 using Shared.DataTypes;
-using Shared.GameState;
 using Shared.GameLogic;
 using Shared.HexGrid;
 using Shared.Communication;
@@ -32,8 +31,6 @@ namespace GameServer
         private static Stopwatch sw;
         private static long ping;
 
-        private static HexMap map;
-        public static HexGrid grid;
         public static Shared.GameLogic.GameLogic gameLogic;
 
         public static void Start(int maxPlayers, int port)
@@ -107,10 +104,6 @@ namespace GameServer
             Console.WriteLine($"Ping to Client {ClientID}: {ping}ms");
 
             ServerSend.Ping(ClientID, ping);
-            using (Packet newPacket = ServerSend.createHexGridPacket(Server.gameLogic.grid))
-            {
-                ServerSend.SendTCPData(ClientID, newPacket);
-            }
         }
     }
 }
