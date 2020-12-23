@@ -117,25 +117,18 @@ namespace GameServer
             }
         }
 
-        public static void SendBuilding(int toClient, BuildingData building)
-        {
-            using (Packet packet = new Packet((int)ServerPackets.sendBuildingData))
-            {
-                packet.Write((byte)building.Type);
-                packet.Write(building.TeamID);
-                packet.Write(building.Level);
-                packet.Write(building.coordinate);
-
-                packet.Write(toClient);
-
-                SendTCPData(toClient, packet);
-            }
-        }
-
-        public static Packet createBuildingDataPacket(BuildingData buildingData)
+        public static Packet createBuildingDataPacket(HexCoordinates coords, BuildingData buildingData)
         {
             Packet packet = new Packet((int)ServerPackets.sendBuildingData);
+            packet.Write(coords);
             packet.Write(buildingData);
+            return packet;
+        }
+
+        public static Packet createHexGridPacket(HexGrid grid)
+        {
+            Packet packet = new Packet((int)ServerPackets.sendHexGrid);
+            packet.Write(grid);
             return packet;
         }
     }

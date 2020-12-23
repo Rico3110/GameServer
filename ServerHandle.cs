@@ -28,19 +28,58 @@ namespace GameServer
             Server.StopPingTest(fromClient);
         }
 
-        public static void SendBuildingData(int fromClient, Packet packet)
+        public static void RequestBuildingData(int fromClient, Packet packet)
         {
+            int clientIDCheck = packet.ReadInt();
             HexCoordinates coordinates = packet.ReadHexCoordinates();
+
+            if (fromClient != clientIDCheck)
+            {
+                Console.WriteLine($"Player with ID: \"{fromClient}\" has assumed the wrong client ID: \"{clientIDCheck}\"!");
+            }
+
+            HexCell cell = Server.gameLogic.grid.GetCell(coordinates);
+            using (Packet newPacket = ServerSend.createBuildingDataPacket(coordinates, cell.Building))
+            {
+                ServerSend.SendTCPData(fromClient, newPacket);
+            }
+
         }
 
         public static void TryBuildBuilding(int fromClient, Packet packet)
         {
             int clientIDCheck = packet.ReadInt();
+            HexCoordinates coords = packet.ReadHexCoordinates();
             BuildingData buildingData = packet.ReadBuildingData();
-            if (Server.gameLogic.verifyBuild(buildingData))
+            
+            if (fromClient != clientIDCheck)
             {
-                HexCell newCell = Server.gameLogic.applyBuild(buildingData);
-                ServerSend.SendTCPDataToAll(ServerSend.createBuildingDataPacket(newCell.Building));
+                Console.WriteLine($"Player with ID: \"{fromClient}\" has assumed the wrong client ID: \"{clientIDCheck}\"!");
+            }
+            
+            if (Server.gameLogic.verifyBuild(coords, buildingData))
+            {
+                HexCell newCell = Server.gameLogic.applyBuild(coords, buildingData);
+                using (Packet newPacket = ServerSend.createBuildingDataPacket(coords, newCell.Building))
+                {
+                    ServerSend.SendTCPDataToAll(newPacket);
+
+                }
+            }
+        }
+
+        public static void RequestAllMapData(int fromClient, Packet packet)
+        {
+            int clientIDCheck = packet.ReadInt();
+
+            if (fromClient != clientIDCheck)
+            {
+                Console.WriteLine($"Player with ID: \"{fromClient}\" has assumed the wrong client ID: \"{clientIDCheck}\"!");
+            }
+
+            using (Packet newPacket = ServerSend.createHexGridPacket(Server.gameLogic.grid))
+            {
+                ServerSend.SendTCPData(fromClient, newPacket);
             }
         }
     }

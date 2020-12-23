@@ -86,8 +86,9 @@ namespace GameServer
             packetHandlers = new Dictionary<int, PacketHandler>()
             {
                 {(int)ClientPackets.welcomeReceived, ServerHandle.WelcomeRecieved},
-                {(int)ClientPackets.requestBuildingData, ServerHandle.SendBuildingData},
-                {(int)ClientPackets.requestBuildBuilding, ServerHandle.TryBuildBuilding}
+                {(int)ClientPackets.requestBuildingData, ServerHandle.RequestBuildingData},
+                {(int)ClientPackets.requestBuildBuilding, ServerHandle.TryBuildBuilding},
+                {(int)ClientPackets.requestAllMapData, ServerHandle.RequestAllMapData}
             };
             Console.WriteLine($"Initialized packets");
         }
@@ -106,7 +107,10 @@ namespace GameServer
             Console.WriteLine($"Ping to Client {ClientID}: {ping}ms");
 
             ServerSend.Ping(ClientID, ping);
-            ServerSend.SendHexMap(ClientID, new HexMap(gameLogic.grid.SerializeData(), gameLogic.grid.chunkCountX, gameLogic.grid.chunkCountZ, 0, 0));
+            using (Packet newPacket = ServerSend.createHexGridPacket(Server.gameLogic.grid))
+            {
+                ServerSend.SendTCPData(ClientID, newPacket);
+            }
         }
     }
 }
