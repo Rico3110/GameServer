@@ -18,7 +18,6 @@ namespace Shared.MapGeneration
             Bitmap[,] images = new Bitmap[tilesX, tilesY];
             int x = Slippy.long2tilex(lon, ZOOM);
             int y = Slippy.lat2tiley(lat, ZOOM);
-            Console.WriteLine(lon + ", " + lat);
             for (int i = -(tilesX - 1) / 2; i < (tilesX + 1) / 2; i++)
             {
                 for (int j = -(tilesY - 1) / 2; j < (tilesY + 1) / 2; j++)
@@ -28,7 +27,6 @@ namespace Shared.MapGeneration
                     HttpWebResponse response = (HttpWebResponse)request.GetResponse();
                     Image image = Image.FromStream(response.GetResponseStream());
                     images[i + (tilesX - 1) / 2, j + (tilesY- 1) / 2] = new Bitmap(image);
-                    //Console.WriteLine(url);
                 }
             }
             return images;
@@ -59,7 +57,6 @@ namespace Shared.MapGeneration
             Bitmap[,] images = new Bitmap[tilesX, tilesY];
             int x = Slippy.long2tilex(lon, ZOOM);
             int y = Slippy.lat2tiley(lat, ZOOM);
-            Console.WriteLine(lon + ", " + lat);
             for (int i = -(tilesX - 1) / 2; i < (tilesX + 1) / 2; i++)
             {
                 for (int j = -(tilesY - 1) / 2; j < (tilesY + 1) / 2; j++)
@@ -69,7 +66,6 @@ namespace Shared.MapGeneration
                     HttpWebResponse response = (HttpWebResponse)request.GetResponse();
                     Image image = Image.FromStream(response.GetResponseStream());
                     images[i + (tilesX - 1) / 2, j + (tilesY - 1) / 2] = new Bitmap(image);
-                    //Console.WriteLine(url);
                 }
             }
             return images;

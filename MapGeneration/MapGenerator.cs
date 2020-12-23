@@ -250,7 +250,6 @@ namespace Shared.MapGeneration
                     }                    
                 }
             }
-            Console.WriteLine(minElevation);
             foreach (HexCell cell in area)
             {
                 HexCellData cellData = cell.Data;         
@@ -304,7 +303,6 @@ namespace Shared.MapGeneration
                     }
                     HexCellData data = cell.Data;
                     cell.Data = new HexCellData(data.Elevation, data.Biome, (byte)(5 + 3 * waterCount));
-                    Console.WriteLine(cell.Data.WaterDepth);
                 }
             }
         }
@@ -313,7 +311,6 @@ namespace Shared.MapGeneration
         {
             foreach (HexCell cell in hexGrid.cells)
             {
-                Console.WriteLine(cell.Data.Biome);
                 if(cell.Data.Biome != HexCellBiome.WATER)
                 {
                     for (HexDirection d = HexDirection.NE; d <= HexDirection.NW; d++)
