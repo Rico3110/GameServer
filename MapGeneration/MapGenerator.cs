@@ -220,6 +220,8 @@ namespace Shared.MapGeneration
             {
                 adjustWaterArea(area);
             }
+
+            updateWaterDepth();
         }
 
         private void adjustWaterArea(List<HexCell> area)
@@ -284,18 +286,46 @@ namespace Shared.MapGeneration
             return area;
         }
 
+        private void updateWaterDepth()
+        {
+            foreach(HexCell cell in hexGrid.cells)
+            {
+                if(cell.Data.Biome == HexCellBiome.WATER)
+                {
+                    int waterCount = 0;
+                    HexCell neighbor;
+                    for(HexDirection d = HexDirection.NE; d <= HexDirection.NW; d++)
+                    {
+                        neighbor = cell.GetNeighbor(d);
+                        if(neighbor != null && neighbor.Data.Biome == HexCellBiome.WATER)
+                        {
+                            waterCount++;
+                        }
+                    }
+                    HexCellData data = cell.Data;
+                    cell.Data = new HexCellData(data.Elevation, data.Biome, (byte)(5 + 3 * waterCount));
+                    Console.WriteLine(cell.Data.WaterDepth);
+                }
+            }
+        }
+
         private void UpdateRocks()
         {
             foreach (HexCell cell in hexGrid.cells)
             {
-                for (HexDirection d = HexDirection.NE; d <= HexDirection.NW; d++)
-                {     
-                    if (cell.GetElevationDifference(d) > 40)
+                Console.WriteLine(cell.Data.Biome);
+                if(cell.Data.Biome != HexCellBiome.WATER)
+                {
+                    for (HexDirection d = HexDirection.NE; d <= HexDirection.NW; d++)
                     {
-                        HexCellData data = cell.Data;
-                        cell.Data = new HexCellData(data.Elevation, HexCellBiome.ROCK, data.WaterDepth);
+                        if (cell.GetElevationDifference(d) > 150)
+                        {
+                            HexCellData data = cell.Data;
+                            cell.Data = new HexCellData(data.Elevation, HexCellBiome.ROCK, data.WaterDepth);
+                        }
                     }
                 }
+                
             }
         }
 
@@ -310,9 +340,12 @@ namespace Shared.MapGeneration
 
         private HexCellBiome fromColorToBiome(Color color)
         {
-            if (color.Equals(Color.FromArgb(255, 55, 136, 48)) || color.Equals(Color.FromArgb(255,139,183,128)))
+            if (color.Equals(Color.FromArgb(255, 55, 136, 48)))
             {
                 return HexCellBiome.FOREST;
+            }else if(color.Equals(Color.FromArgb(255, 139, 183, 128)))
+            {
+                return HexCellBiome.SCRUB;
             }else if (color.Equals(Color.FromArgb(255, 89, 220, 65)))
             {
                 return HexCellBiome.GRASS;
@@ -322,9 +355,12 @@ namespace Shared.MapGeneration
             }else if (color.Equals(Color.FromArgb(255, 189, 137, 97)))
             {
                 return HexCellBiome.CROP;
-            }else if (color.Equals(Color.FromArgb(255, 48, 48, 48)) || color.Equals(Color.FromArgb(255,255,76,77)))
+            }else if (color.Equals(Color.FromArgb(255, 48, 48, 48)))
             {
                 return HexCellBiome.CITY;
+            }else if (color.Equals(Color.FromArgb(255, 255, 76, 77)))
+            {
+                return HexCellBiome.BUILDINGS;
             }
             else
             {
