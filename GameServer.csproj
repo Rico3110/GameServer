@@ -69,7 +69,6 @@
     <Compile Include="Shared-Scripts\Structures\Quarry.cs" />
     <Compile Include="Shared-Scripts\Structures\Ressource.cs" />
     <Compile Include="Shared-Scripts\Structures\Structure.cs" />
-    <Compile Include="Shared-Scripts\Structures\Tree.cs" />
     <Compile Include="Shared-Scripts\Structures\Woodcutter.cs" />
     <Compile Include="Util\Constants.cs" />
     <Compile Include="GameLogic.cs" />
