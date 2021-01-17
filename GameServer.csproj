@@ -47,7 +47,6 @@
   <ItemGroup>
     <Compile Include="Client.cs" />
     <Compile Include="Shared-Scripts\Communication\Packet.cs" />
-    <Compile Include="Shared-Scripts\DataTypes\BuildingData.cs" />
     <Compile Include="Shared-Scripts\DataTypes\RessourceTypes.cs" />
     <Compile Include="Shared-Scripts\DataTypes\DataTypeHelper.cs" />
     <Compile Include="Shared-Scripts\DataTypes\HexCellData.cs" />
@@ -62,14 +61,20 @@
     <Compile Include="MapGeneration\MapGenerator.cs" />
     <Compile Include="MapGeneration\Slippy.cs" />
     <Compile Include="Shared-Scripts\Structures\Building.cs" />
+    <Compile Include="Shared-Scripts\Structures\Fish.cs" />
+    <Compile Include="Shared-Scripts\Structures\Fisher.cs" />
+    <Compile Include="Shared-Scripts\Structures\Grass.cs" />
     <Compile Include="Shared-Scripts\Structures\InventoryBuilding.cs" />
     <Compile Include="Shared-Scripts\Structures\ProtectedBuilding.cs" />
+    <Compile Include="Shared-Scripts\Structures\Quarry.cs" />
     <Compile Include="Shared-Scripts\Structures\Ressource.cs" />
+    <Compile Include="Shared-Scripts\Structures\Rock.cs" />
+    <Compile Include="Shared-Scripts\Structures\Scrub.cs" />
     <Compile Include="Shared-Scripts\Structures\Structure.cs" />
     <Compile Include="Shared-Scripts\Structures\Tree.cs" />
     <Compile Include="Shared-Scripts\Structures\Woodcutter.cs" />
     <Compile Include="Util\Constants.cs" />
-    <Compile Include="GameLogic.cs" />
+    <Compile Include="MainThread.cs" />
     <Compile Include="Server.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />

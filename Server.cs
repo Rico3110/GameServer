@@ -8,9 +8,10 @@ using System.Net.Sockets;
 using System.Diagnostics;
 using Shared.MapGeneration;
 using Shared.DataTypes;
-using Shared.GameLogic;
+using Shared.Game;
 using Shared.HexGrid;
 using Shared.Communication;
+using Shared.Game;
 
 
 
@@ -31,8 +32,6 @@ namespace GameServer
         private static Stopwatch sw;
         private static long ping;
 
-        public static Shared.GameLogic.GameLogic gameLogic;
-
         public static void Start(int maxPlayers, int port)
         {
             MaxPlayers = maxPlayers;
@@ -42,10 +41,9 @@ namespace GameServer
             InitSeverData();
 
             Console.WriteLine("Generating Map...");
-            MapGenerator mapGenerator = new MapGenerator(50.392f, 8.065f, 1);
+            MapGenerator mapGenerator = new MapGenerator(50.357007f, 8.165229f, 3);
 
-            gameLogic = new Shared.GameLogic.GameLogic();
-            gameLogic.grid = mapGenerator.createMap();
+            GameLogic.Init(mapGenerator.createMap());
            
 
             tcpListener = new TcpListener(IPAddress.Any, Port);
@@ -82,10 +80,9 @@ namespace GameServer
 
             packetHandlers = new Dictionary<int, PacketHandler>()
             {
-                {(int)ClientPackets.welcomeReceived, ServerHandle.WelcomeRecieved},
-                {(int)ClientPackets.requestBuildingData, ServerHandle.RequestBuildingData},
-                {(int)ClientPackets.requestBuildBuilding, ServerHandle.TryBuildBuilding},
-                {(int)ClientPackets.requestAllMapData, ServerHandle.RequestAllMapData}
+                {(int)ClientPackets.welcomeReceived, ServerHandle.WelcomeRecieved},               
+                {(int)ClientPackets.requestHexGrid, ServerHandle.RequestHexGrid},
+                {(int)ClientPackets.requestPlaceBuilding, ServerHandle.HandlePlaceBuilding }
             };
             Console.WriteLine($"Initialized packets");
         }

@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 using Shared.Communication;
 using Shared.DataTypes;
 using Shared.HexGrid;
+using Shared.Structures;
 
 namespace GameServer
 {
@@ -63,54 +64,52 @@ namespace GameServer
             }
         }
 
-        public static void TestArray(int toClient)
+        public static Packet createStructurePacket(Structure structure)
         {
-            //Creating test Array
-            uint[] test = new uint[10000];
-            for(int i = 0;i < test.Length; i++)
-            {
-                test[i] = (uint)i * 9; 
-            }
-
-            //Send Uint Array to Client
-            using (Packet packet = new Packet((int)ServerPackets.testArray))
-            {
-                packet.Write(test);
-                packet.Write(toClient);
-
-                SendTCPData(toClient, packet);
-            }
-        }
-
-        /// <summary>
-        /// Sends the given mapdata as an uint array to the choosen client
-        /// </summary>
-        /// <param name="toClient">The client, who gets send the data</param>
-        /// <param name="data">The hexmap data as an uint array</param>
-        public static void SendHexData(int toClient,uint[] data)
-        {
-            //Send Uint Array to Client
-            using (Packet packet = new Packet((int)ServerPackets.hexData))
-            {
-                packet.Write(data);
-                packet.Write(toClient);
-
-                SendTCPData(toClient, packet);
-            }
-        }
-
-        public static Packet createBuildingDataPacket(HexCoordinates coords, BuildingData buildingData)
-        {
-            Packet packet = new Packet((int)ServerPackets.sendBuildingData);
-            packet.Write(coords);
-            packet.Write(buildingData);
+            Packet packet = new Packet(0);
+            packet.Write(structure);
             return packet;
         }
 
-        public static Packet createHexGridPacket(HexGrid grid)
+        public static Packet HexGrid(HexGrid grid)
         {
             Packet packet = new Packet((int)ServerPackets.sendHexGrid);
-            packet.Write(grid);
+
+            packet.Write(grid.chunkCountX);
+            packet.Write(grid.chunkCountZ);
+            packet.Write(grid.cells);
+            
+            foreach(HexCell cell in grid.cells)
+            {
+                    packet.Write(cell.Structure); 
+            }
+            return packet;
+        }
+
+        public static Packet SendStructure(HexCoordinates coordinates, Structure structure)
+        {
+            Packet packet = new Packet((int)ServerPackets.sendStructure);
+            Console.WriteLine("sent");
+            packet.Write(coordinates);
+            packet.Write(structure);
+            return packet;
+        }
+
+        public static void SendGameTick()
+        {
+            using (Packet packet = new Packet((int)ServerPackets.sendGameTick))
+            {
+                SendTCPDataToAll(packet);
+            }
+        }
+
+        public static Packet testBuilding()
+        {
+            Packet packet = new Packet((int)ServerPackets.testBuilding);
+            Woodcutter wc = new Woodcutter();
+            wc.Inventory[RessourceType.WOOD] = 5;
+            packet.Write(wc);
+            Console.WriteLine("fasdgdsdgds");
             return packet;
         }
     }

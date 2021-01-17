@@ -5,6 +5,7 @@ using Shared.HexGrid;
 using Shared.DataTypes;
 using UnityEngine;
 using Color = System.Drawing.Color;
+using Shared.Structures;
 
 namespace Shared.MapGeneration
 {
@@ -105,7 +106,47 @@ namespace Shared.MapGeneration
 
             updateWater();
             UpdateRocks();
+            AddRessources();
             return hexGrid;
+        }
+
+        private void AddRessources()
+        {
+            foreach(HexCell cell in this.hexGrid.cells)
+            {
+                switch (cell.Data.Biome)
+                {
+                    case HexCellBiome.FOREST:
+                    {
+                        cell.Structure = new Tree(cell, 0);
+                        break;
+                    }
+                    case HexCellBiome.ROCK:
+                    {
+                        cell.Structure = new Rock(cell, 0);
+                        break;
+                    }
+                    case HexCellBiome.WATER:
+                    {
+                        cell.Structure = new Fish(cell, 0);
+                        break;
+                    }
+                    case HexCellBiome.SCRUB:
+                    {
+                        cell.Structure = new Scrub(cell, 0);
+                        break;
+                    }
+                    case HexCellBiome.GRASS:
+                    {
+                        cell.Structure = new Grass(cell, 0);
+                        break;
+                    }
+                    default: 
+                    {
+                        break;
+                    }
+                }
+            }
         }
 
         private HexCellBiome parseBiome(int x, int z)

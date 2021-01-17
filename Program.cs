@@ -4,6 +4,8 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Threading;
+using Shared.Structures;
+using Shared.Game;
 
 namespace GameServer
 {
@@ -15,6 +17,7 @@ namespace GameServer
         {
             Console.Title = "Game Server";
             isRunning = true;
+
 
             Thread mainThread = new Thread(new ThreadStart(MainThread));
             mainThread.Start();
@@ -28,12 +31,22 @@ namespace GameServer
         {
             Console.WriteLine($"Main Thread started. Running at {Constants.TICKS_PER_SEC} ticks per second.");
             DateTime nextLoop = DateTime.Now;
+            int counter = 0;
             
             while (isRunning)
             {
                 while(nextLoop < DateTime.Now)
                 {
-                    GameLogic.Update();
+                    GameServer.MainThread.Update();
+                    
+                    counter++;
+                    if (counter == 90)
+                    {
+                        
+                        GameLogic.DoTick();
+                        ServerSend.SendGameTick();
+                        counter = 0;
+                    }
 
                     nextLoop = nextLoop.AddMilliseconds(Constants.MS_PER_TICK);
 

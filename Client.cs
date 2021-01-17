@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 using System.Net;
 using System.Net.Sockets;
 using Shared.Communication;
+using Shared.Game;
 
 namespace GameServer
 {
@@ -49,7 +50,8 @@ namespace GameServer
                 stream.BeginRead(recieveBuffer, 0, dataBufferSize, RecieveCallback, null);
 
                 ServerSend.Welcome(id, "Welcome to the server!");
-                using (Packet newPacket = ServerSend.createHexGridPacket(Server.gameLogic.grid))
+
+                using (Packet newPacket = ServerSend.HexGrid(GameLogic.grid))
                 {
                     ServerSend.SendTCPData(id, newPacket);
                 }
