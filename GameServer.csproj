@@ -62,9 +62,9 @@
     <Compile Include="MapGeneration\Slippy.cs" />
     <Compile Include="Shared-Scripts\Structures\Building.cs" />
     <Compile Include="Shared-Scripts\Structures\Fish.cs" />
-    <Compile Include="Shared-Scripts\Structures\Fisher.cs" />
     <Compile Include="Shared-Scripts\Structures\Grass.cs" />
     <Compile Include="Shared-Scripts\Structures\InventoryBuilding.cs" />
+    <Compile Include="Shared-Scripts\Structures\Fisher.cs" />
     <Compile Include="Shared-Scripts\Structures\ProtectedBuilding.cs" />
     <Compile Include="Shared-Scripts\Structures\Quarry.cs" />
     <Compile Include="Shared-Scripts\Structures\Ressource.cs" />
