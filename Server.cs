@@ -40,8 +40,28 @@ namespace GameServer
             Console.WriteLine("Starting Server...");
             InitSeverData();
 
+            //Get User Input for Coordinates
+            float lat = 50.357007f;
+            float lon = 8.165229f;
+
+            Console.WriteLine("Please enter the latitude of your desired position or leave empty for default position...");
+            string latS = Console.ReadLine();
+            if(latS != "")
+            {
+                lat = float.Parse(latS);
+            }
+            
+            Console.WriteLine("Please enter the longtitude of your desired position or leave empty for default position...");
+            string lonS = Console.ReadLine();
+            if(lonS != "")
+            {
+                lon = float.Parse(lonS);
+            }
+            
+
             Console.WriteLine("Generating Map...");
-            MapGenerator mapGenerator = new MapGenerator(50.357007f, 8.165229f, 3);
+            Console.WriteLine(lat + " , " + lon);
+            MapGenerator mapGenerator = new MapGenerator(lat,lon, 3);
 
             GameLogic.Init(mapGenerator.createMap());
            
