@@ -41,8 +41,8 @@ namespace GameServer
             InitSeverData();
 
             //Get User Input for Coordinates
-            float lat = 50.357007f;
-            float lon = 8.165229f;
+            float lat = 50.369409f;
+            float lon = 8.000615f;
 
             Console.WriteLine("Please enter the latitude of your desired position or leave empty for default position...");
             string latS = Console.ReadLine();
