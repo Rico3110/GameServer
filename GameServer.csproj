@@ -68,6 +68,7 @@
     <Compile Include="Shared-Scripts\Structures\ProtectedBuilding.cs" />
     <Compile Include="Shared-Scripts\Structures\Quarry.cs" />
     <Compile Include="Shared-Scripts\Structures\Ressource.cs" />
+    <Compile Include="Shared-Scripts\Structures\Road.cs" />
     <Compile Include="Shared-Scripts\Structures\Rock.cs" />
     <Compile Include="Shared-Scripts\Structures\Scrub.cs" />
     <Compile Include="Shared-Scripts\Structures\Structure.cs" />

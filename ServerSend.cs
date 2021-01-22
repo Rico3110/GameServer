@@ -71,28 +71,30 @@ namespace GameServer
             return packet;
         }
 
-        public static Packet HexGrid(HexGrid grid)
+        public static void SendHexGrid(HexGrid grid, int toClient)
         {
-            Packet packet = new Packet((int)ServerPackets.sendHexGrid);
+            using (Packet packet = new Packet((int)ServerPackets.sendHexGrid))
+            {     
+                packet.Write(grid.chunkCountX);
+                packet.Write(grid.chunkCountZ);
+                packet.Write(grid.cells);
 
-            packet.Write(grid.chunkCountX);
-            packet.Write(grid.chunkCountZ);
-            packet.Write(grid.cells);
-            
-            foreach(HexCell cell in grid.cells)
+                foreach (HexCell cell in grid.cells)
+                {
+                    packet.Write(cell.Structure);
+                }
+                SendTCPData(toClient, packet);
+            }   
+        }   
+    
+        public static void SendStructure(HexCoordinates coordinates, Structure structure)
+        {
+            using (Packet packet = new Packet((int)ServerPackets.sendStructure))
             {
-                    packet.Write(cell.Structure); 
+                packet.Write(coordinates);
+                packet.Write(structure);
+                SendTCPDataToAll(packet);
             }
-            return packet;
-        }
-
-        public static Packet SendStructure(HexCoordinates coordinates, Structure structure)
-        {
-            Packet packet = new Packet((int)ServerPackets.sendStructure);
-            Console.WriteLine("sent");
-            packet.Write(coordinates);
-            packet.Write(structure);
-            return packet;
         }
 
         public static void SendGameTick()
@@ -102,15 +104,14 @@ namespace GameServer
                 SendTCPDataToAll(packet);
             }
         }
-
-        public static Packet testBuilding()
+        
+        public static void SendUpgradeBuilding(HexCoordinates coordinates)
         {
-            Packet packet = new Packet((int)ServerPackets.testBuilding);
-            Woodcutter wc = new Woodcutter();
-            wc.Inventory[RessourceType.WOOD] = 5;
-            packet.Write(wc);
-            Console.WriteLine("fasdgdsdgds");
-            return packet;
+            using (Packet packet = new Packet((int)ServerPackets.sendUpgradeBuilding))
+            {
+                packet.Write(coordinates);
+                SendTCPDataToAll(packet);
+            }
         }
     }
 }

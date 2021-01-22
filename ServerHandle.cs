@@ -30,7 +30,7 @@ namespace GameServer
             Server.StopPingTest(fromClient);
         }
 
-        public static void RequestHexGrid(int fromClient, Packet packet)
+        public static void HandleMapRequest(int fromClient, Packet packet)
         {
             int clientIDCheck = packet.ReadInt();
 
@@ -40,10 +40,7 @@ namespace GameServer
             }
             Console.WriteLine("fdsajkllhgdsj");
 
-            using (Packet newPacket = ServerSend.HexGrid(GameLogic.grid))
-            {
-                ServerSend.SendTCPData(fromClient, newPacket);
-            }                     
+            ServerSend.SendHexGrid(GameLogic.grid, fromClient);                  
         }
 
         public static void HandlePlaceBuilding(int fromClient, Packet packet)
@@ -62,10 +59,25 @@ namespace GameServer
             if(GameLogic.verifyBuild(coordinates, structure))
             {
                 GameLogic.applyBuild(coordinates, structure);
-                using (Packet newPacket = ServerSend.SendStructure(coordinates, structure))
-                {
-                    ServerSend.SendTCPData(fromClient, newPacket);
-                }                  
+                ServerSend.SendStructure(coordinates, structure);             
+            }
+        }
+
+        public static void HandleUpgradeBuilding(int fromClient, Packet packet)
+        {
+            int clientIDCheck = packet.ReadInt();
+
+            if (fromClient != clientIDCheck)
+            {
+                Console.WriteLine($"Player with ID: \"{fromClient}\" has assumed the wrong client ID: \"{clientIDCheck}\"!");
+            }
+
+            HexCoordinates coordinates = packet.ReadHexCoordinates();
+            HexCell cell = GameLogic.grid.GetCell(coordinates);
+            if(cell != null && cell.Structure is Building)
+            {
+                GameLogic.applyUpgrade(coordinates);
+                ServerSend.SendUpgradeBuilding(coordinates);
             }
         }
     }

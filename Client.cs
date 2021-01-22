@@ -51,10 +51,7 @@ namespace GameServer
 
                 ServerSend.Welcome(id, "Welcome to the server!");
 
-                using (Packet newPacket = ServerSend.HexGrid(GameLogic.grid))
-                {
-                    ServerSend.SendTCPData(id, newPacket);
-                }
+                ServerSend.SendHexGrid(GameLogic.grid, id);
             }
 
             public void SendData(Packet packet)
