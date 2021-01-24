@@ -61,18 +61,21 @@
     <Compile Include="MapGeneration\MapGenerator.cs" />
     <Compile Include="MapGeneration\Slippy.cs" />
     <Compile Include="Shared-Scripts\Structures\Building.cs" />
-    <Compile Include="Shared-Scripts\Structures\Fish.cs" />
-    <Compile Include="Shared-Scripts\Structures\Grass.cs" />
+    <Compile Include="Shared-Scripts\Structures\Ressources\CoalOre.cs" />
+    <Compile Include="Shared-Scripts\Structures\Ressources\Fish.cs" />
+    <Compile Include="Shared-Scripts\Structures\Ressources\Grass.cs" />
     <Compile Include="Shared-Scripts\Structures\InventoryBuilding.cs" />
     <Compile Include="Shared-Scripts\Structures\Fisher.cs" />
     <Compile Include="Shared-Scripts\Structures\ProtectedBuilding.cs" />
     <Compile Include="Shared-Scripts\Structures\Quarry.cs" />
     <Compile Include="Shared-Scripts\Structures\Ressource.cs" />
+    <Compile Include="Shared-Scripts\Structures\Ressources\IronOre.cs" />
+    <Compile Include="Shared-Scripts\Structures\Ressources\Wheat.cs" />
     <Compile Include="Shared-Scripts\Structures\Road.cs" />
-    <Compile Include="Shared-Scripts\Structures\Rock.cs" />
-    <Compile Include="Shared-Scripts\Structures\Scrub.cs" />
+    <Compile Include="Shared-Scripts\Structures\Ressources\Rock.cs" />
+    <Compile Include="Shared-Scripts\Structures\Ressources\Scrub.cs" />
     <Compile Include="Shared-Scripts\Structures\Structure.cs" />
-    <Compile Include="Shared-Scripts\Structures\Tree.cs" />
+    <Compile Include="Shared-Scripts\Structures\Ressources\Tree.cs" />
     <Compile Include="Shared-Scripts\Structures\Woodcutter.cs" />
     <Compile Include="Util\Constants.cs" />
     <Compile Include="MainThread.cs" />
@@ -88,6 +91,8 @@
   <ItemGroup>
     <None Include="App.config" />
   </ItemGroup>
-  <ItemGroup />
+  <ItemGroup>
+    <Folder Include="Shared-Scripts\Structures\Buildings\" />
+  </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

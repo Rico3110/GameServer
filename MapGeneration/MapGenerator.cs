@@ -9,17 +9,6 @@ using Shared.Structures;
 
 namespace Shared.MapGeneration
 {
-    internal struct Cell
-    {
-        public int x;
-        public int z;
-
-        public Cell(int x, int z)
-        {
-            this.x = x;
-            this.z = z;
-        }
-    }
 
     public class MapGenerator
     {      
@@ -139,6 +128,23 @@ namespace Shared.MapGeneration
                     case HexCellBiome.GRASS:
                     {
                         cell.Structure = new Grass(cell, 0);
+                        break;
+                    }
+                    case HexCellBiome.CITY:
+                    {
+                        var rand = new Random();
+                            if (rand.NextDouble() < 0.2)
+                                if (rand.NextDouble() < 0.5)
+                                    cell.Structure = new IronOre(cell, 0);
+                                else
+                                    cell.Structure = new CoalOre(cell, 0);
+                        break;
+                    }
+                    case HexCellBiome.CROP:
+                    {
+                        var rand = new Random();
+                        if (rand.NextDouble() < 0.2)
+                            cell.Structure = new Wheat(cell, 0);
                         break;
                     }
                     default: 
@@ -354,7 +360,7 @@ namespace Shared.MapGeneration
                 {
                     for (HexDirection d = HexDirection.NE; d <= HexDirection.NW; d++)
                     {
-                        if (cell.GetElevationDifference(d) > 150)
+                        if (cell.GetElevationDifference(d) > 100)
                         {
                             HexCellData data = cell.Data;
                             cell.Data = new HexCellData(data.Elevation, HexCellBiome.ROCK, data.WaterDepth);
