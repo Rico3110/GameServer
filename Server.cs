@@ -32,6 +32,8 @@ namespace GameServer
         private static Stopwatch sw;
         private static long ping;
 
+        private static bool askForCoordinates = false; 
+
         public static void Start(int maxPlayers, int port)
         {
             MaxPlayers = maxPlayers;
@@ -39,23 +41,26 @@ namespace GameServer
 
             Console.WriteLine("Starting Server...");
             InitSeverData();
-            
+ 
             //Get User Input for Coordinates
-            float lat = 50.355319f;
-            float lon = 8.191495f;
+            float lat = 50.388785f;
+            float lon = 8.072562f;
 
-            Console.WriteLine("Please enter the latitude of your desired position or leave empty for default position...");
-            string latS = Console.ReadLine();
-            if(latS != "")
+            if (askForCoordinates)
             {
-                lat = float.Parse(latS);
-            }
+                Console.WriteLine("Please enter the latitude of your desired position or leave empty for default position...");
+                string latS = Console.ReadLine();
+                if(latS != "")
+                {
+                    lat = float.Parse(latS);
+                }
             
-            Console.WriteLine("Please enter the longtitude of your desired position or leave empty for default position...");
-            string lonS = Console.ReadLine();
-            if(lonS != "")
-            {
-                lon = float.Parse(lonS);
+                Console.WriteLine("Please enter the longtitude of your desired position or leave empty for default position...");
+                string lonS = Console.ReadLine();
+                if(lonS != "")
+                {
+                    lon = float.Parse(lonS);
+                }
             }
             
 

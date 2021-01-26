@@ -46,7 +46,8 @@ namespace Shared.MapGeneration
         private Bitmap[,] waterImages;
 
         private bool[] visited;
-        
+
+        private Random random;
 
         public MapGenerator(float lat, float lon, int size)
         {
@@ -71,6 +72,8 @@ namespace Shared.MapGeneration
             hexGrid = new HexGrid.HexGrid(CHUNK_COUNT_X, CHUNK_COUNT_Z);
 
             waterAreas = new List<List<HexCell>>();
+
+            random = new Random();
         }
 
         public HexGrid.HexGrid createMap()
@@ -117,7 +120,9 @@ namespace Shared.MapGeneration
                     }
                     case HexCellBiome.WATER:
                     {
-                        cell.Structure = new Fish(cell, 0);
+                        double r = random.NextDouble();
+                        if (r < 0.1)
+                            cell.Structure = new Fish(cell, 0);
                         break;
                     }
                     case HexCellBiome.SCRUB:
@@ -132,18 +137,17 @@ namespace Shared.MapGeneration
                     }
                     case HexCellBiome.CITY:
                     {
-                        var rand = new Random();
-                            if (rand.NextDouble() < 0.2)
-                                if (rand.NextDouble() < 0.5)
-                                    cell.Structure = new IronOre(cell, 0);
-                                else
-                                    cell.Structure = new CoalOre(cell, 0);
+                        double r = random.NextDouble();
+                        if (r < 0.1)
+                            if (r < 0.05)
+                                cell.Structure = new IronOre(cell, 0);
+                            else
+                                cell.Structure = new CoalOre(cell, 0);
                         break;
                     }
                     case HexCellBiome.CROP:
                     {
-                        var rand = new Random();
-                        if (rand.NextDouble() < 0.2)
+                        if (random.NextDouble() < 0.2)
                             cell.Structure = new Wheat(cell, 0);
                         break;
                     }
@@ -404,10 +408,11 @@ namespace Shared.MapGeneration
             {
                 return HexCellBiome.BUILDINGS;
             }
-            else
+            else if(color.Equals(Color.FromArgb(255, 107, 107, 107)))
             {
                 return HexCellBiome.ROCK;
             }
+            return HexCellBiome.WATER;
         }
     }
 }
