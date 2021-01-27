@@ -64,13 +64,6 @@ namespace GameServer
             }
         }
 
-        public static Packet createStructurePacket(Structure structure)
-        {
-            Packet packet = new Packet(0);
-            packet.Write(structure);
-            return packet;
-        }
-
         public static void SendHexGrid(HexGrid grid, int toClient)
         {
             using (Packet packet = new Packet((int)ServerPackets.sendHexGrid))

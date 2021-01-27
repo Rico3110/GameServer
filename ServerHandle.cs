@@ -56,6 +56,9 @@ namespace GameServer
             Type type = packet.ReadType();
             Structure structure = (Structure)Activator.CreateInstance(type);
 
+            if (structure is Building)
+                ((Building)structure).Tribe = (byte)fromClient;
+
             if(GameLogic.verifyBuild(coordinates, structure))
             {
                 GameLogic.applyBuild(coordinates, structure);
