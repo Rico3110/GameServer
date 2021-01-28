@@ -7,6 +7,7 @@ using System.Net;
 using System.Net.Sockets;
 using Shared.Communication;
 using Shared.Game;
+using Shared.HexGrid;
 
 namespace GameServer
 {
@@ -15,6 +16,8 @@ namespace GameServer
         public static int dataBufferSize = 4096;
         public int id;
         public TCP tcp;
+
+        public Player Player;
 
         public Client(int clientID)
         {
@@ -51,7 +54,7 @@ namespace GameServer
 
                 ServerSend.Welcome(id, "Welcome to the server!");
 
-                ServerSend.SendHexGrid(GameLogic.grid, id);
+                ServerSend.InitGameLogic(id);
             }
 
             public void SendData(Packet packet)
@@ -146,7 +149,7 @@ namespace GameServer
                 stream = null;
                 recievedData = null;
                 recieveBuffer = null;
-                socket = null;
+                socket = null;                
             }
         }
 
@@ -154,8 +157,8 @@ namespace GameServer
         {
             Console.WriteLine($"{tcp.socket.Client.RemoteEndPoint} has disconnected.");
 
-            //TODO
-            //player = null;
+            //TODO            
+            Player = null;
             tcp.Disconnect();
         }
 

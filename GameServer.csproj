@@ -51,6 +51,8 @@
     <Compile Include="Shared-Scripts\DataTypes\DataTypeHelper.cs" />
     <Compile Include="Shared-Scripts\DataTypes\HexCellData.cs" />
     <Compile Include="Shared-Scripts\GameLogic\GameLogic.cs" />
+    <Compile Include="Shared-Scripts\GameLogic\Player.cs" />
+    <Compile Include="Shared-Scripts\GameLogic\Tribe.cs" />
     <Compile Include="Shared-Scripts\HexGrid\HexCell.cs" />
     <Compile Include="Shared-Scripts\HexGrid\HexCoordinates.cs" />
     <Compile Include="Shared-Scripts\HexGrid\HexDirection.cs" />
@@ -61,6 +63,9 @@
     <Compile Include="MapGeneration\MapGenerator.cs" />
     <Compile Include="MapGeneration\Slippy.cs" />
     <Compile Include="Shared-Scripts\Structures\Building.cs" />
+    <Compile Include="Shared-Scripts\Structures\Buildings\Headquarter.cs" />
+    <Compile Include="Shared-Scripts\Structures\Buildings\Smelter.cs" />
+    <Compile Include="Shared-Scripts\Structures\Buildings\Storage.cs" />
     <Compile Include="Shared-Scripts\Structures\Ressources\CoalOre.cs" />
     <Compile Include="Shared-Scripts\Structures\Ressources\Fish.cs" />
     <Compile Include="Shared-Scripts\Structures\Ressources\Grass.cs" />

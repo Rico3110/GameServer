@@ -108,7 +108,9 @@ namespace GameServer
                 {(int)ClientPackets.welcomeReceived, ServerHandle.WelcomeRecieved},               
                 {(int)ClientPackets.requestHexGrid, ServerHandle.HandleMapRequest},
                 {(int)ClientPackets.requestPlaceBuilding, ServerHandle.HandlePlaceBuilding },
-                {(int)ClientPackets.requestUpgradeBuilding, ServerHandle.HandleUpgradeBuilding }
+                {(int)ClientPackets.requestUpgradeBuilding, ServerHandle.HandleUpgradeBuilding },
+                {(int)ClientPackets.positionUpdate, ServerHandle.HandlePositionUpdate },
+                {(int)ClientPackets.requestBuildHQ, ServerHandle.HandleBuildHQ }
             };
             Console.WriteLine($"Initialized packets");
         }

@@ -25,6 +25,23 @@ namespace GameServer
                 Console.WriteLine($"Player \"{username}\" (ID: {fromClient}) has assumed the wrong client ID ({clientIDCheck})!");
             }
             //TODO send player into game
+            Player clientPlayer = GameLogic.GetPlayer(username); 
+            if (clientPlayer != null)
+            {
+                foreach(Client client in Server.clients.Values)
+                {
+                    if (client.Player == clientPlayer)
+                    {
+                        Console.WriteLine($"Can't assign a Player to \"{username}\" (ID: {fromClient}) because there is already an active client with the username \"{username}\"!");
+                        // Server.clients[fromClient].Disconnect();
+                    }
+                }
+                Server.clients[fromClient].Player = clientPlayer;
+            }
+            else 
+            {
+                Server.clients[fromClient].Player = GameLogic.AddPlayer(username, null);
+            }
 
             //Stop Timer
             Server.StopPingTest(fromClient);
@@ -40,7 +57,31 @@ namespace GameServer
             }
             Console.WriteLine("fdsajkllhgdsj");
 
-            ServerSend.SendHexGrid(GameLogic.grid, fromClient);                  
+            ServerSend.InitGameLogic(fromClient);                  
+        }
+
+        public static void HandleBuildHQ(int fromClient, Packet packet)
+        {
+            int clientIDCheck = packet.ReadInt();
+
+            if (fromClient != clientIDCheck)
+            {
+                Console.WriteLine($"Player with ID: \"{fromClient}\" has assumed the wrong client ID: \"{clientIDCheck}\"!");
+            }
+
+            Player player = Server.clients[fromClient].Player;
+
+            HexCoordinates coordinates = packet.ReadHexCoordinates();
+            Headquarter hq = new Headquarter();
+            
+            if (GameLogic.VerifyBuildHQ(coordinates, hq, player))
+            {
+                Tribe tribe = GameLogic.ApplyBuildHQ(coordinates, hq);
+                player.Tribe = tribe;
+                ServerSend.SendStructure(coordinates, hq);
+                ServerSend.BroadcastTribe(tribe);
+                ServerSend.BroadcastPlayer(player);
+            }
         }
 
         public static void HandlePlaceBuilding(int fromClient, Packet packet)
@@ -52,17 +93,16 @@ namespace GameServer
                 Console.WriteLine($"Player with ID: \"{fromClient}\" has assumed the wrong client ID: \"{clientIDCheck}\"!");
             }
 
+            Player player = Server.clients[fromClient].Player;
+
             HexCoordinates coordinates = packet.ReadHexCoordinates();
             Type type = packet.ReadType();
-            Structure structure = (Structure)Activator.CreateInstance(type);
+            Building building = (Building)Activator.CreateInstance(type);
 
-            if (structure is Building)
-                ((Building)structure).Tribe = (byte)fromClient;
-
-            if(GameLogic.verifyBuild(coordinates, structure))
+            if(GameLogic.VerifyBuild(coordinates, building, player))
             {
-                GameLogic.applyBuild(coordinates, structure);
-                ServerSend.SendStructure(coordinates, structure);             
+                GameLogic.ApplyBuild(coordinates, building, player.Tribe);
+                ServerSend.SendStructure(coordinates, building);             
             }
         }
 
@@ -75,13 +115,29 @@ namespace GameServer
                 Console.WriteLine($"Player with ID: \"{fromClient}\" has assumed the wrong client ID: \"{clientIDCheck}\"!");
             }
 
+            Player player = Server.clients[fromClient].Player;
+
             HexCoordinates coordinates = packet.ReadHexCoordinates();
-            HexCell cell = GameLogic.grid.GetCell(coordinates);
-            if(cell != null && cell.Structure is Building)
+            if (GameLogic.VerifyUpgrade(coordinates, player))
             {
-                GameLogic.applyUpgrade(coordinates);
+                GameLogic.ApplyUpgrade(coordinates, player.Tribe);
                 ServerSend.SendUpgradeBuilding(coordinates);
             }
+        }
+
+        public static void HandlePositionUpdate(int fromClient, Packet packet)
+        {
+            int clientIDCheck = packet.ReadInt();
+
+            if (fromClient != clientIDCheck)
+            {
+                Console.WriteLine($"Player with ID: \"{fromClient}\" has assumed the wrong client ID: \"{clientIDCheck}\"!");
+            }
+
+            Player player = Server.clients[fromClient].Player;
+            HexCoordinates coordinates = packet.ReadHexCoordinates();
+            player.Position = coordinates;
+            ServerSend.BroadcastPlayer(player);
         }
     }
 }

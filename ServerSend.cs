@@ -7,6 +7,7 @@ using Shared.Communication;
 using Shared.DataTypes;
 using Shared.HexGrid;
 using Shared.Structures;
+using Shared.Game;
 
 namespace GameServer
 {
@@ -64,18 +65,32 @@ namespace GameServer
             }
         }
 
-        public static void SendHexGrid(HexGrid grid, int toClient)
+        public static void InitGameLogic(int toClient)
         {
-            using (Packet packet = new Packet((int)ServerPackets.sendHexGrid))
-            {     
-                packet.Write(grid.chunkCountX);
-                packet.Write(grid.chunkCountZ);
-                packet.Write(grid.cells);
+            using (Packet packet = new Packet((int)ServerPackets.initGameLogic))
+            {
+                packet.Write(GameLogic.grid);
 
-                foreach (HexCell cell in grid.cells)
+                packet.Write(GameLogic.Tribes.Count);
+                foreach(Tribe tribe in GameLogic.Tribes)
                 {
-                    packet.Write(cell.Structure);
+                    packet.Write(tribe.Id);
+                    Console.WriteLine(tribe.HQ.Cell.coordinates);
+                    packet.Write(tribe.HQ.Cell.coordinates);
                 }
+
+                packet.Write(GameLogic.Players.Count);
+                foreach (Player player in GameLogic.Players)
+                {
+                    packet.Write(player.Name);
+                    Tribe tribe = player.Tribe;
+                    if (tribe == null)
+                        packet.Write(-1);
+                    else
+                        packet.Write(player.Tribe.Id);
+                    packet.Write(player.Position);
+                }
+
                 SendTCPData(toClient, packet);
             }   
         }   
@@ -103,6 +118,34 @@ namespace GameServer
             using (Packet packet = new Packet((int)ServerPackets.sendUpgradeBuilding))
             {
                 packet.Write(coordinates);
+                SendTCPDataToAll(packet);
+            }
+        }
+
+        public static void BroadcastPlayer(Player player)
+        {
+            using (Packet packet = new Packet((int)ServerPackets.broadcastPlayer))
+            {
+                packet.Write(player.Name);
+                if (player.Tribe == null)
+                {
+                    packet.Write(-1);
+                }
+                else 
+                {
+                    packet.Write(player.Tribe.Id);
+                }
+                packet.Write(player.Position);
+                SendTCPDataToAll(packet);
+            }
+        }
+
+        public static void BroadcastTribe(Tribe tribe)
+        {
+            using (Packet packet = new Packet((int)ServerPackets.broadcastTribe))
+            {
+                packet.Write(tribe.Id);
+                packet.Write(tribe.HQ.Cell.coordinates);
                 SendTCPDataToAll(packet);
             }
         }

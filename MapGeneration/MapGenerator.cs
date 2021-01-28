@@ -140,7 +140,7 @@ namespace Shared.MapGeneration
                         double r = random.NextDouble();
                         if (r < 0.1)
                             if (r < 0.05)
-                                cell.Structure = new IronOre(cell, 0);
+                                cell.Structure = new Rock(cell, 0);
                             else
                                 cell.Structure = new CoalOre(cell, 0);
                         break;
