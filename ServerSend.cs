@@ -64,7 +64,6 @@ namespace GameServer
                 SendTCPData(toClient, packet);
             }
         }
-
         public static void InitGameLogic(int toClient)
         {
             using (Packet packet = new Packet((int)ServerPackets.initGameLogic))
@@ -78,6 +77,18 @@ namespace GameServer
                     Console.WriteLine(tribe.HQ.Cell.coordinates);
                     packet.Write(tribe.HQ.Cell.coordinates);
                 }
+
+                Player ownPlayer = Server.clients[toClient].Player;
+                packet.Write(ownPlayer.Name);
+                if (ownPlayer.Tribe == null)
+                {
+                    packet.Write(-1);
+                }
+                else
+                {
+                    packet.Write(ownPlayer.Tribe.Id);
+                }
+                packet.Write(ownPlayer.Position);
 
                 packet.Write(GameLogic.Players.Count);
                 foreach (Player player in GameLogic.Players)

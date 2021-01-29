@@ -53,8 +53,6 @@ namespace GameServer
                 stream.BeginRead(recieveBuffer, 0, dataBufferSize, RecieveCallback, null);
 
                 ServerSend.Welcome(id, "Welcome to the server!");
-
-                ServerSend.InitGameLogic(id);
             }
 
             public void SendData(Packet packet)

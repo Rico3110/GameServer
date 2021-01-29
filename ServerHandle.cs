@@ -45,6 +45,7 @@ namespace GameServer
 
             //Stop Timer
             Server.StopPingTest(fromClient);
+            ServerSend.InitGameLogic(fromClient);
         }
 
         public static void HandleMapRequest(int fromClient, Packet packet)
