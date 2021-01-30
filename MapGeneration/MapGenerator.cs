@@ -141,9 +141,11 @@ namespace Shared.MapGeneration
                         if (r < 0.1)
                             if (r < 0.05)
                                 cell.Structure = new Rock(cell, 0);
-                            else
+                            else if(r < 0.075)
                                 cell.Structure = new CoalOre(cell, 0);
-                        break;
+                            else
+                                cell.Structure = new IronOre(cell, 0);
+                            break;
                     }
                     case HexCellBiome.CROP:
                     {
