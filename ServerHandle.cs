@@ -140,5 +140,31 @@ namespace GameServer
             player.Position = coordinates;
             ServerSend.BroadcastPlayer(player);
         }
+
+        public static void HandleJoinTribe(int fromClient, Packet packet)
+        {
+            int clientIDCheck = packet.ReadInt();
+
+            if (fromClient != clientIDCheck)
+            {
+                Console.WriteLine($"Player with ID: \"{fromClient}\" has assumed the wrong client ID: \"{clientIDCheck}\"!");
+            }
+
+            Player player = Server.clients[fromClient].Player;
+            HexCoordinates coordinates = packet.ReadHexCoordinates();
+            if (GameLogic.PlayerInRange(coordinates, player) && player.Tribe == null)
+            {
+                HexCell cell = GameLogic.grid.GetCell(coordinates);
+                if (cell != null)
+                {
+                    Structure hq = cell.Structure;
+                    if (hq is Headquarter)
+                    {
+                        player.Tribe = GameLogic.GetTribe(((Headquarter)hq).Tribe);
+                        ServerSend.BroadcastPlayer(player);
+                    }
+                }
+            }
+        }
     }
 }
