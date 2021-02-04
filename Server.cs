@@ -66,7 +66,7 @@ namespace GameServer
 
             Console.WriteLine("Generating Map...");
             Console.WriteLine(lat + " , " + lon);
-            MapGenerator mapGenerator = new MapGenerator(lat,lon, 3);
+            MapGenerator mapGenerator = new MapGenerator(lat,lon, 1);
 
             GameLogic.Init(mapGenerator.createMap());
            
