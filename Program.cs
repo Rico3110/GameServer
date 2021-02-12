@@ -32,7 +32,7 @@ namespace GameServer
             Console.WriteLine($"Main Thread started. Running at {Constants.TICKS_PER_SEC} ticks per second.");
             DateTime nextLoop = DateTime.Now;
             int counter = 0;
-            
+
             while (isRunning)
             {
                 while(nextLoop < DateTime.Now)

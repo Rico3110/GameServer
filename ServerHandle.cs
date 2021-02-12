@@ -103,7 +103,7 @@ namespace GameServer
             if(GameLogic.VerifyBuild(coordinates, building, player))
             {
                 GameLogic.ApplyBuild(coordinates, building, player.Tribe);
-                ServerSend.SendStructure(coordinates, building);             
+                ServerSend.BroadcastApplyBuild(coordinates, type, player.Tribe.Id);             
             }
         }
 
@@ -122,7 +122,7 @@ namespace GameServer
             if (GameLogic.VerifyUpgrade(coordinates, player))
             {
                 GameLogic.ApplyUpgrade(coordinates, player.Tribe);
-                ServerSend.SendUpgradeBuilding(coordinates);
+                ServerSend.BroadcastUpgradeBuilding(coordinates);
             }
         }
 

@@ -82,7 +82,7 @@ namespace GameServer
                 packet.Write(ownPlayer.Name);
                 if (ownPlayer.Tribe == null)
                 {
-                    packet.Write(-1);
+                    packet.Write(255);
                 }
                 else
                 {
@@ -96,11 +96,13 @@ namespace GameServer
                     packet.Write(player.Name);
                     Tribe tribe = player.Tribe;
                     if (tribe == null)
-                        packet.Write(-1);
+                        packet.Write(255);
                     else
                         packet.Write(player.Tribe.Id);
                     packet.Write(player.Position);
                 }
+
+                Console.WriteLine(packet.Length());
 
                 SendTCPData(toClient, packet);
             }   
@@ -118,17 +120,28 @@ namespace GameServer
 
         public static void SendGameTick()
         {
-            using (Packet packet = new Packet((int)ServerPackets.sendGameTick))
+            using (Packet packet = new Packet((int)ServerPackets.gameTick))
             {
                 SendTCPDataToAll(packet);
             }
         }
         
-        public static void SendUpgradeBuilding(HexCoordinates coordinates)
+        public static void BroadcastUpgradeBuilding(HexCoordinates coordinates)
         {
-            using (Packet packet = new Packet((int)ServerPackets.sendUpgradeBuilding))
+            using (Packet packet = new Packet((int)ServerPackets.upgradeBuilding))
             {
                 packet.Write(coordinates);
+                SendTCPDataToAll(packet);
+            }
+        }
+
+        public static void BroadcastApplyBuild(HexCoordinates coords, Type buildingType, byte tribeID)
+        {
+            using (Packet packet = new Packet((int)ServerPackets.applyBuild))
+            {
+                packet.Write(coords);
+                packet.Write(buildingType);
+                packet.Write(tribeID);
                 SendTCPDataToAll(packet);
             }
         }
@@ -140,7 +153,7 @@ namespace GameServer
                 packet.Write(player.Name);
                 if (player.Tribe == null)
                 {
-                    packet.Write(-1);
+                    packet.Write((byte)255);
                 }
                 else 
                 {
