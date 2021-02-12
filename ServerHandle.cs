@@ -79,8 +79,7 @@ namespace GameServer
             {
                 Tribe tribe = GameLogic.ApplyBuildHQ(coordinates, hq);
                 player.Tribe = tribe;
-                ServerSend.SendStructure(coordinates, hq);
-                ServerSend.BroadcastTribe(tribe);
+                ServerSend.BroadcastApplyBuildHQ(coordinates);
                 ServerSend.BroadcastPlayer(player);
             }
         }

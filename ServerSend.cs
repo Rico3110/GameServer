@@ -146,6 +146,16 @@ namespace GameServer
             }
         }
 
+        public static void BroadcastApplyBuildHQ(HexCoordinates coords)
+        {
+            using (Packet packet = new Packet((int)ServerPackets.applyBuildHQ))
+            {
+                packet.Write(coords);
+                SendTCPDataToAll(packet);
+            }
+            
+        }
+
         public static void BroadcastPlayer(Player player)
         {
             using (Packet packet = new Packet((int)ServerPackets.broadcastPlayer))
