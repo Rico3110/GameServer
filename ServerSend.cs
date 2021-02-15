@@ -74,7 +74,6 @@ namespace GameServer
                 foreach(Tribe tribe in GameLogic.Tribes)
                 {
                     packet.Write(tribe.Id);
-                    Console.WriteLine(tribe.HQ.Cell.coordinates);
                     packet.Write(tribe.HQ.Cell.coordinates);
                 }
 
@@ -101,8 +100,6 @@ namespace GameServer
                         packet.Write(player.Tribe.Id);
                     packet.Write(player.Position);
                 }
-
-                Console.WriteLine(packet.Length());
 
                 SendTCPData(toClient, packet);
             }   
@@ -153,7 +150,6 @@ namespace GameServer
                 packet.Write(coords);
                 SendTCPDataToAll(packet);
             }
-            
         }
 
         public static void BroadcastPlayer(Player player)

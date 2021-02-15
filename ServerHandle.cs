@@ -56,7 +56,6 @@ namespace GameServer
             {
                 Console.WriteLine($"Player with ID: \"{fromClient}\" has assumed the wrong client ID: \"{clientIDCheck}\"!");
             }
-            Console.WriteLine("fdsajkllhgdsj");
 
             ServerSend.InitGameLogic(fromClient);                  
         }
