@@ -41,10 +41,10 @@ namespace GameServer
 
             Console.WriteLine("Starting Server...");
             InitSeverData();
-            
+
             //Get User Input for Coordinates
-            float lat = 50.359086f;
-            float lon = 8.184875f;
+            float lat = 50.389047f;
+            float lon = 8.069761f;
 
             if (askForCoordinates)
             {
