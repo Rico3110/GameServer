@@ -74,7 +74,7 @@ namespace GameServer
                 packet.Write(ownPlayer.Name);
                 if (ownPlayer.Tribe == null)
                 {
-                    packet.Write(255);
+                    packet.Write((byte)255);
                 }
                 else
                 {
@@ -89,7 +89,7 @@ namespace GameServer
                     packet.Write(player.Name);
                     Tribe tribe = player.Tribe;
                     if (tribe == null)
-                        packet.Write(255);
+                        packet.Write((byte)255);
                     else
                         packet.Write(player.Tribe.Id);
                     packet.Write(player.Position);
