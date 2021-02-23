@@ -47,6 +47,7 @@
   <ItemGroup>
     <Compile Include="Client.cs" />
     <Compile Include="Shared-Scripts\Communication\Packet.cs" />
+    <Compile Include="Shared-Scripts\DataTypes\TroopType.cs" />
     <Compile Include="Shared-Scripts\DataTypes\RessourceTypes.cs" />
     <Compile Include="Shared-Scripts\DataTypes\DataTypeHelper.cs" />
     <Compile Include="Shared-Scripts\DataTypes\HexCellData.cs" />
@@ -93,6 +94,7 @@
     <Compile Include="Shared-Scripts\Structures\Utils\Cart.cs" />
     <Compile Include="Shared-Scripts\Structures\Utils\ICartHandler.cs" />
     <Compile Include="Shared-Scripts\Structures\Utils\Inventory.cs" />
+    <Compile Include="Shared-Scripts\Structures\Utils\TroopInventory.cs" />
     <Compile Include="Util\Constants.cs" />
     <Compile Include="MainThread.cs" />
     <Compile Include="Server.cs" />

@@ -8,6 +8,7 @@ using Shared.HexGrid;
 using Shared.DataTypes;
 using Shared.Structures;
 using Shared.Game;
+using UnityEngine;
 
 namespace GameServer
 {
@@ -163,6 +164,45 @@ namespace GameServer
                     }
                 }
             }
+        }
+
+        public static void HandleMoveTroops(int fromClient, Packet packet)
+        {
+            int clientIDCheck = packet.ReadInt();
+
+            if (fromClient != clientIDCheck)
+            {
+                Console.WriteLine($"Player with ID: \"{fromClient}\" has assumed the wrong client ID: \"{clientIDCheck}\"!");
+            }
+
+            HexCoordinates coordinates = packet.ReadHexCoordinates();
+            TroopType troopType = (TroopType)packet.ReadByte();
+            int amount = packet.ReadInt();
+
+            Player player = Server.clients[fromClient].Player;
+            TroopInventory buildingInventory = ((ProtectedBuilding) GameLogic.grid.GetCell(coordinates).Structure).TroopInventory;
+            
+            if (GameLogic.MoveTroops(player, coordinates, troopType, amount))
+            {
+                ServerSend.BroadcastMoveTroops(player, coordinates, troopType, amount);
+            }
+        }
+
+        public static void HandleFight(int fromClient, Packet packet)
+        {
+            int clientIDCheck = packet.ReadInt();
+
+            if (fromClient != clientIDCheck)
+            {
+                Console.WriteLine($"Player with ID: \"{fromClient}\" has assumed the wrong client ID: \"{clientIDCheck}\"!");
+            }
+
+            Player player = Server.clients[fromClient].Player;
+            HexCoordinates coordinates = packet.ReadHexCoordinates();
+
+            GameLogic.Fight(player, coordinates);
+
+            ServerSend.BroadcastFight(player, coordinates);
         }
     }
 }

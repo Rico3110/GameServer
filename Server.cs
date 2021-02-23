@@ -12,6 +12,7 @@ using Shared.Game;
 using Shared.HexGrid;
 using Shared.Communication;
 using Shared.Game;
+using Shared.Structures;
 
 
 
@@ -41,6 +42,24 @@ namespace GameServer
 
             Console.WriteLine("Starting Server...");
             InitSeverData();
+
+            TroopInventory test1 = new TroopInventory();
+            TroopInventory test2 = new TroopInventory();
+            List<Tuple<TroopType, bool>> strat1 = new List<Tuple<TroopType, bool>>();
+            strat1.Add(new Tuple<TroopType, bool>(TroopType.SPEARMAN, true));
+            strat1.Add(new Tuple<TroopType, bool>(TroopType.ARCHER, false));
+            strat1.Add(new Tuple<TroopType, bool>(TroopType.KNIGHT, false));
+
+            List<Tuple<TroopType, bool>> strat2 = new List<Tuple<TroopType, bool>>();
+            strat2.Add(new Tuple<TroopType, bool>(TroopType.ARCHER, true));
+            strat2.Add(new Tuple<TroopType, bool>(TroopType.KNIGHT, true));
+            strat2.Add(new Tuple<TroopType, bool>(TroopType.SPEARMAN, true));
+
+
+            test1.UpdateStrategy(strat1);
+            test2.UpdateStrategy(strat2);
+
+            Console.WriteLine(test1.Fight(test2));
 
             //Get User Input for Coordinates
             float lat = 50.389047f;
@@ -111,7 +130,9 @@ namespace GameServer
                 {(int)ClientPackets.requestUpgradeBuilding, ServerHandle.HandleUpgradeBuilding },
                 {(int)ClientPackets.positionUpdate, ServerHandle.HandlePositionUpdate },
                 {(int)ClientPackets.requestBuildHQ, ServerHandle.HandleBuildHQ },
-                {(int)ClientPackets.requestJoinTribe, ServerHandle.HandleJoinTribe}
+                {(int)ClientPackets.requestJoinTribe, ServerHandle.HandleJoinTribe},
+                {(int)ClientPackets.requestMoveTroops, ServerHandle.HandleMoveTroops},
+                {(int)ClientPackets.requestFight, ServerHandle.HandleFight}
             };
             Console.WriteLine($"Initialized packets");
         }

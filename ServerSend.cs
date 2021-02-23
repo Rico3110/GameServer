@@ -70,13 +70,6 @@ namespace GameServer
             {
                 packet.Write(GameLogic.grid);
 
-                packet.Write(GameLogic.Tribes.Count);
-                foreach(Tribe tribe in GameLogic.Tribes)
-                {
-                    packet.Write(tribe.Id);
-                    packet.Write(tribe.HQ.Cell.coordinates);
-                }
-
                 Player ownPlayer = Server.clients[toClient].Player;
                 packet.Write(ownPlayer.Name);
                 if (ownPlayer.Tribe == null)
@@ -88,6 +81,7 @@ namespace GameServer
                     packet.Write(ownPlayer.Tribe.Id);
                 }
                 packet.Write(ownPlayer.Position);
+                packet.Write(ownPlayer.TroopInventory);
 
                 packet.Write(GameLogic.Players.Count);
                 foreach (Player player in GameLogic.Players)
@@ -99,6 +93,7 @@ namespace GameServer
                     else
                         packet.Write(player.Tribe.Id);
                     packet.Write(player.Position);
+                    packet.Write(player.TroopInventory);
                 }
 
                 SendTCPData(toClient, packet);
@@ -166,6 +161,7 @@ namespace GameServer
                     packet.Write(player.Tribe.Id);
                 }
                 packet.Write(player.Position);
+                packet.Write(player.TroopInventory);
                 SendTCPDataToAll(packet);
             }
         }
@@ -177,6 +173,26 @@ namespace GameServer
                 packet.Write(tribe.Id);
                 packet.Write(tribe.HQ.Cell.coordinates);
                 SendTCPDataToAll(packet);
+            }
+        }
+
+        public static void BroadcastMoveTroops(Player player, HexCoordinates coordinates, TroopType type, int amount)
+        {
+            using (Packet packet = new Packet((int)ServerPackets.broadcastMoveTroops))
+            {
+                packet.Write(player.Name);
+                packet.Write(coordinates);
+                packet.Write((byte)type);
+                packet.Write(amount);
+            }
+        }
+
+        public static void BroadcastFight(Player player, HexCoordinates coordinates)
+        {
+            using (Packet packet = new Packet((int)ServerPackets.broadcastFight))
+            {
+                packet.Write(player.Name);
+                packet.Write(coordinates);
             }
         }
     }
