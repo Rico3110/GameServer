@@ -27,6 +27,8 @@ namespace Shared.MapGeneration
         private readonly int CELL_COUNT_X;
         private readonly int CELL_COUNT_Z;
 
+        private readonly int CELL_COUNT;
+
         private readonly float HEX_WIDTH;
         private readonly float HEX_HEIGHT;
 
@@ -49,6 +51,10 @@ namespace Shared.MapGeneration
 
         private Random random;
 
+        private int[] parsedBiomes;
+        private Dictionary<HexCellBiome, int> cellQueryThresholds;
+        private Dictionary<HexCellBiome, Tuple<int, int>> biomeTresholds;
+
         public MapGenerator(float lat, float lon, int size)
         {
             LONGITUDE = lon;
@@ -65,6 +71,8 @@ namespace Shared.MapGeneration
 
             CELL_COUNT_X = CHUNK_COUNT_X * HexMetrics.chunkSizeX;
             CELL_COUNT_Z = CHUNK_COUNT_Z * HexMetrics.chunkSizeZ;
+
+            CELL_COUNT = CELL_COUNT_X * CELL_COUNT_Z;
 
             HEX_WIDTH = HexMetrics.innerRadius + 2f * HexMetrics.innerRadius * (float)CELL_COUNT_X;
             HEX_HEIGHT = 0.5f * HexMetrics.outerRadius + 1.5f * HexMetrics.outerRadius * (float)CELL_COUNT_Z;
@@ -89,33 +97,86 @@ namespace Shared.MapGeneration
             waterAreas = new List<List<HexCell>>();
 
             random = new Random();
+
+            cellQueryThresholds = new Dictionary<HexCellBiome, int>();
+            foreach (HexCellBiome biome in Enum.GetValues(typeof(HexCellBiome)))
+            {
+                cellQueryThresholds.Add(biome, 4);
+            }
+            
+            biomeTresholds = new Dictionary<HexCellBiome, Tuple<int, int>>
+            {
+                { HexCellBiome.FOREST,      new Tuple<int, int>((int)(0.1f * CELL_COUNT), (int)(0.4f * CELL_COUNT)) },
+                { HexCellBiome.SCRUB,       new Tuple<int, int>((int)(0.1f * CELL_COUNT), (int)(0.4f * CELL_COUNT)) },
+                { HexCellBiome.GRASS,       new Tuple<int, int>((int)(0.1f * CELL_COUNT), (int)(0.4f * CELL_COUNT)) },
+                { HexCellBiome.CROP,        new Tuple<int, int>((int)(0.1f * CELL_COUNT), (int)(0.4f * CELL_COUNT)) },
+                { HexCellBiome.ROCK,        new Tuple<int, int>((int)(0.1f * CELL_COUNT), (int)(0.4f * CELL_COUNT)) },
+                { HexCellBiome.SNOW,        new Tuple<int, int>((int)(0.1f * CELL_COUNT), (int)(0.4f * CELL_COUNT)) },
+                { HexCellBiome.CITY,        new Tuple<int, int>((int)(0.1f * CELL_COUNT), (int)(0.2f * CELL_COUNT)) },
+                { HexCellBiome.BUILDINGS,   new Tuple<int, int>((int)(0.1f * CELL_COUNT), (int)(0.2f * CELL_COUNT)) },
+                { HexCellBiome.WATER,       new Tuple<int, int>((int)(0.005f * CELL_COUNT), (int)(0.1f * CELL_COUNT)) }
+            };
         }
 
-        public HexGrid.HexGrid createMap()
+        public HexGrid.HexGrid CreateMap()
         {
             FetchMaps();           
-         
-            for (int z = 0; z < CELL_COUNT_Z; z++)
-            {
-                for (int x = 0; x < CELL_COUNT_X; x++)
-                {
-                    HexCellBiome biome = parseBiome(x, z);
-                    ushort height = parseHeight(x, z);
-                    byte waterDepth = parseWater(x, z);                   
-                    if(waterDepth != 0)
-                    {
-                        biome = HexCellBiome.WATER;
-                    }
-                    HexCellData cellData = new HexCellData(height, biome, waterDepth);
-                    hexGrid.GetCell(x, z).Data = cellData;                    
-                }
-            }
 
+            //Iterative rework generated map until its balanced
+            int i = 0;
+            do
+            {
+                ApplyBiomes();
+                i++;
+            }
+            while(!CheckMap() && i < 10);
+            
             updateWater();
             UpdateRocks();
             AddRessources();
 
             return hexGrid;
+        }
+
+        private void ApplyBiomes()
+        {
+            parsedBiomes = new int[Enum.GetValues(typeof(HexCellBiome)).Length];
+            for (int z = 0; z < CELL_COUNT_Z; z++)
+            {
+                for (int x = 0; x < CELL_COUNT_X; x++)
+                {
+                    HexCellBiome biome = parseBiome(x, z);
+                    int height = parseHeight(x, z);
+                    byte waterDepth = 0;
+                    if (biome == HexCellBiome.WATER)
+                    {
+                        waterDepth = 1;
+                    }
+                    parsedBiomes[(int)biome] += 1;
+                    HexCellData cellData = new HexCellData(height, biome, waterDepth);
+                    hexGrid.GetCell(x, z).Data = cellData;
+                }
+            }
+        }
+
+        private bool CheckMap() {
+            bool mapOK = true;
+            Console.WriteLine("Forrest Count: " + parsedBiomes[(int)HexCellBiome.FOREST].ToString());
+            foreach (HexCellBiome biome in biomeTresholds.Keys)
+            {
+                Console.WriteLine(biome.ToString() + ": " + this.cellQueryThresholds[biome].ToString());
+                if (parsedBiomes[(int)biome] < biomeTresholds[biome].Item1)
+                {
+                    mapOK = false;
+                    this.cellQueryThresholds[biome] = Mathf.Clamp(--this.cellQueryThresholds[biome], 0, 8);
+                }
+                if (parsedBiomes[(int)biome] > biomeTresholds[biome].Item2)
+                {
+                    mapOK = false;
+                    this.cellQueryThresholds[biome] = Mathf.Clamp(++this.cellQueryThresholds[biome], 0, 8);
+                }
+            }
+            return mapOK;
         }
 
         private void AddRessources()
@@ -183,18 +244,58 @@ namespace Shared.MapGeneration
             float posZ = z * (HexMetrics.outerRadius * 1.5f) + 0.5f * HexMetrics.innerRadius;
            
             Color landPixel = GetPixel(landImages, posX, posZ);
-            return fromColorToBiome(landPixel);
+            //return fromColorToBiome(landPixel);
+            
+            List<Tuple<HexCellBiome, int>> foundBiomes = new List<Tuple<HexCellBiome, int>>();
+
+            int index = foundBiomes.FindIndex(elem => elem.Item1 == fromColorToBiome(landPixel));
+            if (index == -1)
+                foundBiomes.Add(new Tuple<HexCellBiome, int>(fromColorToBiome(landPixel), 2));
+            else
+                foundBiomes[index] = new Tuple<HexCellBiome, int>(fromColorToBiome(landPixel), foundBiomes[index].Item2 + 2);
+
+            Vector3 position = new Vector3(posX, 0, posZ);
+
+
+            for (HexDirection d = HexDirection.NE; d <= HexDirection.NW; d++)
+            {
+                position += 0.5f * HexMetrics.GetFirstCorner(d);
+
+                Color pixel = GetPixel(landImages, position.x, position.z);
+                HexCellBiome biome = fromColorToBiome(pixel);
+
+                index = foundBiomes.FindIndex(elem => elem.Item1 == biome);
+                if(index == -1)
+                    foundBiomes.Add(new Tuple<HexCellBiome, int>(biome, 1));
+                else
+                    foundBiomes[index] = new Tuple<HexCellBiome, int>(biome, foundBiomes[index].Item2 + 1);
+
+                position -= 0.5f * HexMetrics.GetFirstCorner(d);
+            }
+
+
+            foundBiomes.Sort((a, b) => b.Item2 - a.Item2);
+            foreach (Tuple<HexCellBiome, int> tpl in foundBiomes)
+            {
+                if (cellQueryThresholds[tpl.Item1] <= tpl.Item2)
+                {
+                    return tpl.Item1;
+                }    
+            }
+            
+            //gooaphtermayoriti
+            return foundBiomes[0].Item1;
         }
 
-        private ushort parseHeight(int x, int z)
+        private int parseHeight(int x, int z)
         {
             float posX = (x + z * 0.5f - z / 2) * (HexMetrics.innerRadius * 2f);
             float posZ = z * (HexMetrics.outerRadius * 1.5f);
 
             Color heightPixel = GetPixel(heightImages, posX, posZ);
             float height = -10000f + ((float)((heightPixel.R * 256 * 256) + (heightPixel.G * 256) + heightPixel.B) * 0.1f);
-
-            return (ushort)height;
+            
+            return (int)height;
         }
 
         private byte parseWater(int x, int z){
@@ -263,12 +364,12 @@ namespace Shared.MapGeneration
 
         private void adjustWaterArea(List<HexCell> area)
         {
-            uint minElevation = int.MaxValue;
+            int minElevation = int.MaxValue;
             HexCell neighbor;
-            uint neighborElevation;
+            int neighborElevation;
             foreach (HexCell cell in area)
             {
-                uint cellElevation = cell.Elevation;
+                int cellElevation = cell.Elevation;
                 if (cellElevation < minElevation)
                 {
                     minElevation = cellElevation;
@@ -290,7 +391,7 @@ namespace Shared.MapGeneration
             foreach (HexCell cell in area)
             {
                 HexCellData cellData = cell.Data;         
-                cell.Data = new HexCellData((ushort)minElevation, cell.Data.Biome, cell.Data.WaterDepth);
+                cell.Data = new HexCellData(minElevation, cell.Data.Biome, cell.Data.WaterDepth);
             }
         }
 
@@ -367,7 +468,7 @@ namespace Shared.MapGeneration
         {           
             landImages = MapboxHandler.FetchLandcoverMap(LONGITUDE, LATITUDE, TILE_COUNT_X, TILE_COUNT_Z);
             heightImages = MapboxHandler.FetchHeightMap(LONGITUDE, LATITUDE, TILE_COUNT_X, TILE_COUNT_Z);
-            waterImages = MapboxHandler.FetchWaterMap(LONGITUDE, LATITUDE, TILE_COUNT_X, TILE_COUNT_Z);
+            // waterImages = MapboxHandler.FetchWaterMap(LONGITUDE, LATITUDE, TILE_COUNT_X, TILE_COUNT_Z);
         }
 
         private Color GetPixel(Bitmap[,] imageArray, float x, float z)
@@ -389,7 +490,7 @@ namespace Shared.MapGeneration
             }else if (color.Equals(Color.FromArgb(255, 89, 220, 65)))
             {
                 return HexCellBiome.GRASS;
-            }else if (color.Equals(Color.FromArgb(255, 75, 189, 221)))
+            }else if (color.Equals(Color.FromArgb(255, 96, 173, 195)))
             {
                 return HexCellBiome.WATER;
             }else if (color.Equals(Color.FromArgb(255, 189, 137, 97)))

@@ -60,10 +60,10 @@ namespace GameServer
             test2.UpdateStrategy(strat2);
 
             Console.WriteLine(test1.Fight(test2));
-
+             
             //Get User Input for Coordinates
-            float lat = 50.389047f;
-            float lon = 8.069761f;
+            float lat = 50.355139f;
+            float lon = 8.191492f;
 
             if (askForCoordinates)
             {
@@ -85,9 +85,9 @@ namespace GameServer
 
             Console.WriteLine("Generating Map...");
             Console.WriteLine(lat + " , " + lon);
-            MapGenerator mapGenerator = new MapGenerator(lat,lon, 3);
+            MapGenerator mapGenerator = new MapGenerator(lat,lon, 7);
 
-            GameLogic.Init(mapGenerator.createMap());
+            GameLogic.Init(mapGenerator.CreateMap());
            
 
             tcpListener = new TcpListener(IPAddress.Any, Port);
