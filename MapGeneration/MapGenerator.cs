@@ -295,7 +295,7 @@ namespace Shared.MapGeneration
             Color heightPixel = GetPixel(heightImages, posX, posZ);
             float height = -10000f + ((float)((heightPixel.R * 256 * 256) + (heightPixel.G * 256) + heightPixel.B) * 0.1f);
             
-            return (int)height;
+            return (int)height / 8;
         }
 
         private byte parseWater(int x, int z){
@@ -440,7 +440,7 @@ namespace Shared.MapGeneration
                         }
                     }
                     HexCellData data = cell.Data;
-                    cell.Data = new HexCellData(data.Elevation, data.Biome, (byte)(5 + 3 * waterCount));
+                    cell.Data = new HexCellData(data.Elevation, data.Biome, (byte)(1 + waterCount / 2));
                 }
             }
         }
