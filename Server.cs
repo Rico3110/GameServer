@@ -60,10 +60,10 @@ namespace GameServer
             test2.UpdateStrategy(strat2);
 
             Console.WriteLine(test1.Fight(test2));
-
+             
             //Get User Input for Coordinates
-            float lat = 50.389271f;
-            float lon = 8.066915f;
+            float lat = 49.873497f;
+            float lon = 8.649533f;
 
             if (askForCoordinates)
             {

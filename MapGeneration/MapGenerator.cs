@@ -6,6 +6,7 @@ using Shared.DataTypes;
 using UnityEngine;
 using Color = System.Drawing.Color;
 using Shared.Structures;
+using System.Linq;
 
 namespace Shared.MapGeneration
 {
@@ -51,9 +52,12 @@ namespace Shared.MapGeneration
 
         private Random random;
 
-        private int[] parsedBiomes;
+        private Dictionary<HexCellBiome, int> parsedBiomes;
         private Dictionary<HexCellBiome, int> cellQueryThresholds;
-        private Dictionary<HexCellBiome, Tuple<int, int>> biomeTresholds;
+        private Dictionary<HexCellBiome, Tuple<int, int>> biomeThresholds;
+
+        private int[] parsedRessources;
+        private Dictionary<RessourceType, Tuple<int, int>> ressourceThresholds;
 
         public MapGenerator(float lat, float lon, int size)
         {
@@ -104,18 +108,30 @@ namespace Shared.MapGeneration
                 cellQueryThresholds.Add(biome, 4);
             }
             
-            biomeTresholds = new Dictionary<HexCellBiome, Tuple<int, int>>
+            biomeThresholds = new Dictionary<HexCellBiome, Tuple<int, int>>
             {
-                { HexCellBiome.FOREST,      new Tuple<int, int>((int)(0.1f * CELL_COUNT), (int)(0.4f * CELL_COUNT)) },
-                { HexCellBiome.SCRUB,       new Tuple<int, int>((int)(0.1f * CELL_COUNT), (int)(0.4f * CELL_COUNT)) },
-                { HexCellBiome.GRASS,       new Tuple<int, int>((int)(0.1f * CELL_COUNT), (int)(0.4f * CELL_COUNT)) },
-                { HexCellBiome.CROP,        new Tuple<int, int>((int)(0.1f * CELL_COUNT), (int)(0.4f * CELL_COUNT)) },
-                { HexCellBiome.ROCK,        new Tuple<int, int>((int)(0.1f * CELL_COUNT), (int)(0.4f * CELL_COUNT)) },
-                { HexCellBiome.SNOW,        new Tuple<int, int>((int)(0.1f * CELL_COUNT), (int)(0.4f * CELL_COUNT)) },
+                { HexCellBiome.FOREST,      new Tuple<int, int>((int)(0.05f * CELL_COUNT), (int)(0.4f * CELL_COUNT)) },
+                { HexCellBiome.SCRUB,       new Tuple<int, int>((int)(0.05f * CELL_COUNT), (int)(0.4f * CELL_COUNT)) },
+                { HexCellBiome.GRASS,       new Tuple<int, int>((int)(0.05f * CELL_COUNT), (int)(0.4f * CELL_COUNT)) },
+                { HexCellBiome.CROP,        new Tuple<int, int>((int)(0.05f * CELL_COUNT), (int)(0.4f * CELL_COUNT)) },
+                { HexCellBiome.COAL,        new Tuple<int, int>((int)(0.02f * CELL_COUNT), (int)(0.1f * CELL_COUNT)) },
+                { HexCellBiome.ROCK,        new Tuple<int, int>((int)(0.04f * CELL_COUNT), (int)(0.4f * CELL_COUNT)) },
                 { HexCellBiome.CITY,        new Tuple<int, int>((int)(0.1f * CELL_COUNT), (int)(0.2f * CELL_COUNT)) },
-                { HexCellBiome.BUILDINGS,   new Tuple<int, int>((int)(0.1f * CELL_COUNT), (int)(0.2f * CELL_COUNT)) },
+                { HexCellBiome.BUILDINGS,   new Tuple<int, int>((int)(0.05f * CELL_COUNT), (int)(0.2f * CELL_COUNT)) },
                 { HexCellBiome.WATER,       new Tuple<int, int>((int)(0.005f * CELL_COUNT), (int)(0.1f * CELL_COUNT)) }
             };
+            /*
+            parsedRessources = new int[Enum.GetValues(RessourceType).Length];
+            ressourceThresholds = new Dictionary<Type, int>{
+                { RessourceType.COAL, new Tuple<int, int>((int)(0.005f * CELL_COUNT), (int)(0.01f * CELL_COUNT)) },
+                { RessourceType.WOOD, new Tuple<int, int>((int)(0.005f * CELL_COUNT), (int)(0.01f * CELL_COUNT)) },
+                { RessourceType.WHEAT, new Tuple<int, int>((int)(0.005f * CELL_COUNT), (int)(0.01f * CELL_COUNT)) },
+                { RessourceType.FISH, new Tuple<int, int>((int)(0.005f * CELL_COUNT), (int)(0.01f * CELL_COUNT)) },
+                { RessourceType.IRON_ORE, new Tuple<int, int>((int)(0.005f * CELL_COUNT), (int)(0.01f * CELL_COUNT)) },
+                { RessourceType, new Tuple<int, int>((int)(0.005f * CELL_COUNT), (int)(0.01f * CELL_COUNT)) },
+                { RessourceType.COAL, new Tuple<int, int>((int)(0.005f * CELL_COUNT), (int)(0.01f * CELL_COUNT)) },
+            }
+            */
         }
 
         public HexGrid.HexGrid CreateMap()
@@ -130,17 +146,24 @@ namespace Shared.MapGeneration
                 i++;
             }
             while(!CheckMap() && i < 10);
-            
-            updateWater();
-            UpdateRocks();
-            AddRessources();
 
+            updateWater();
+
+            AddMissingBiomes();
+            
+            AddRessources();
+            
             return hexGrid;
         }
 
         private void ApplyBiomes()
         {
-            parsedBiomes = new int[Enum.GetValues(typeof(HexCellBiome)).Length];
+            parsedBiomes = new Dictionary<HexCellBiome, int>();
+            foreach (HexCellBiome biome in Enum.GetValues(typeof(HexCellBiome)))
+            {
+                parsedBiomes.Add(biome, 0);
+            }
+            
             for (int z = 0; z < CELL_COUNT_Z; z++)
             {
                 for (int x = 0; x < CELL_COUNT_X; x++)
@@ -152,7 +175,7 @@ namespace Shared.MapGeneration
                     {
                         waterDepth = 1;
                     }
-                    parsedBiomes[(int)biome] += 1;
+                    parsedBiomes[biome] += 1;
                     HexCellData cellData = new HexCellData(height, biome, waterDepth);
                     hexGrid.GetCell(x, z).Data = cellData;
                 }
@@ -161,16 +184,14 @@ namespace Shared.MapGeneration
 
         private bool CheckMap() {
             bool mapOK = true;
-            Console.WriteLine("Forrest Count: " + parsedBiomes[(int)HexCellBiome.FOREST].ToString());
-            foreach (HexCellBiome biome in biomeTresholds.Keys)
+            foreach (HexCellBiome biome in biomeThresholds.Keys)
             {
-                Console.WriteLine(biome.ToString() + ": " + this.cellQueryThresholds[biome].ToString());
-                if (parsedBiomes[(int)biome] < biomeTresholds[biome].Item1)
+                if (parsedBiomes[biome] < biomeThresholds[biome].Item1)
                 {
                     mapOK = false;
                     this.cellQueryThresholds[biome] = Mathf.Clamp(--this.cellQueryThresholds[biome], 0, 8);
                 }
-                if (parsedBiomes[(int)biome] > biomeTresholds[biome].Item2)
+                if (parsedBiomes[biome] > biomeThresholds[biome].Item2)
                 {
                     mapOK = false;
                     this.cellQueryThresholds[biome] = Mathf.Clamp(++this.cellQueryThresholds[biome], 0, 8);
@@ -179,6 +200,81 @@ namespace Shared.MapGeneration
             return mapOK;
         }
 
+        private void AddMissingBiomes()
+        {
+            foreach(HexCellBiome biome in biomeThresholds.Keys)
+            {
+                if (biome != HexCellBiome.WATER && biome != HexCellBiome.BUILDINGS && biome != HexCellBiome.CITY && biome != HexCellBiome.SNOW)
+                {
+                    if(parsedBiomes[biome] < biomeThresholds[biome].Item1)
+                    {
+                        Console.WriteLine("Adjusting missing: " + biome.ToString());
+                        if (biome == HexCellBiome.ROCK || biome == HexCellBiome.COAL)
+                        {
+                            List<HexCell> buildings = new List<HexCell>();
+                            foreach(HexCell cell in hexGrid.cells)
+                            {
+                                if(cell.Data.Biome == HexCellBiome.BUILDINGS)
+                                {
+                                    buildings.Add(cell);
+                                }
+                            }
+                            int count3 = 0;
+                            if(biome == HexCellBiome.COAL)
+                                count3 = Mathf.Min(biomeThresholds[biome].Item1 - parsedBiomes[biome], (int)(((float)biomeThresholds[biome].Item1 / (float)(biomeThresholds[HexCellBiome.COAL].Item1 + (float)biomeThresholds[HexCellBiome.ROCK].Item1 + 1.0f)) * (float)buildings.Count));
+                            else
+                                count3 = Mathf.Min(biomeThresholds[biome].Item1 - parsedBiomes[biome], buildings.Count);
+                            ReplaceMissingBiome(biome, HexCellBiome.BUILDINGS, count3);
+                        }
+                        /*
+                        HexCellBiome majority = this.parsedBiomes.Aggregate(
+                            HexCellBiome.FOREST, 
+                            (HexCellBiome agg, KeyValuePair<HexCellBiome, int> elem) => agg = (elem.Value > parsedBiomes[agg] ? elem.Key : agg));
+                        */
+                        HexCellBiome majorityBiome = this.parsedBiomes.Aggregate(HexCellBiome.FOREST, (HexCellBiome elem1, KeyValuePair<HexCellBiome, int> elem2) =>
+                        {
+                            if (parsedBiomes[elem1] < elem2.Value)
+                                return elem2.Key;
+                            else
+                                return elem1;
+                        });
+
+                        int count = biomeThresholds[biome].Item1 - parsedBiomes[biome];
+                        ReplaceMissingBiome(biome, majorityBiome, count);
+                        
+                    }
+
+                }
+
+            }
+        }
+
+        private void ReplaceMissingBiome(HexCellBiome biome, HexCellBiome replace, int count)
+        {
+            List<HexCell> replaceCells = new List<HexCell>();
+            foreach (HexCell cell in hexGrid.cells)
+            {
+                if (cell.Data.Biome == replace)
+                {
+                    replaceCells.Add(cell);
+                }
+            }
+            while (count > 0)
+            {
+                Console.WriteLine("Replacing " + replace.ToString() + " with " + biome.ToString());
+                HexCell cell = replaceCells[random.Next(0, replaceCells.Count)];
+                //cell.Data.SetBiome(biome);
+                cell.Data = new HexCellData(cell.Data.Elevation, biome, cell.Data.WaterDepth);
+                Console.WriteLine(cell.Data.Biome.ToString() + biome.ToString());
+                this.parsedBiomes[biome]++;
+                this.parsedBiomes[replace]--;
+                replaceCells.Remove(cell);
+                count--;
+            }
+        }
+
+        //mandatory: Stone, Wood (Forest/Scrub), Coal, Cows, 
+        //Optional: Fish, (Wheat), 
         private void AddRessources()
         {
             foreach(HexCell cell in this.hexGrid.cells)
@@ -214,16 +310,13 @@ namespace Shared.MapGeneration
                     }
                     case HexCellBiome.CITY:
                     {
-                        double r = random.NextDouble();
-                        if (r < 0.1)
-                            if (r < 0.05)
-                                cell.Structure = new Rock(cell, 0);
-                            else if(r < 0.075)
-                                cell.Structure = new CoalOre(cell, 0);
-                            else
-                                cell.Structure = new IronOre(cell, 0);
-                            break;
+                        break;
                     }
+                    case HexCellBiome.COAL:
+                        {
+                            cell.Structure = new CoalOre(cell, 0);
+                            break;
+                        }
                     case HexCellBiome.CROP:
                     {
                         //if (random.NextDouble() < 0.2)
