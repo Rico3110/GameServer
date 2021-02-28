@@ -132,7 +132,8 @@ namespace GameServer
                 {(int)ClientPackets.requestBuildHQ, ServerHandle.HandleBuildHQ },
                 {(int)ClientPackets.requestJoinTribe, ServerHandle.HandleJoinTribe},
                 {(int)ClientPackets.requestMoveTroops, ServerHandle.HandleMoveTroops},
-                {(int)ClientPackets.requestFight, ServerHandle.HandleFight}
+                {(int)ClientPackets.requestFight, ServerHandle.HandleFight},
+                {(int)ClientPackets.requestHarvest, ServerHandle.HandleHarvest}
             };
             Console.WriteLine($"Initialized packets");
         }

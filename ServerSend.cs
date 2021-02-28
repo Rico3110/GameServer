@@ -195,5 +195,15 @@ namespace GameServer
                 packet.Write(coordinates);
             }
         }
+
+        public static void BroadcastHarvest(byte tribeID, HexCoordinates coordinates)
+        {
+            using (Packet packet = new Packet((int)ServerPackets.broadcastHarvest))
+            {
+                packet.Write(tribeID);
+                packet.Write(coordinates);
+            }
+
+        }
     }
 }

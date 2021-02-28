@@ -204,5 +204,24 @@ namespace GameServer
 
             ServerSend.BroadcastFight(player, coordinates);
         }
+
+        public static void HandleHarvest(int fromClient, Packet packet)
+        {
+            int clientIDCheck = packet.ReadInt();
+
+            if (fromClient != clientIDCheck)
+            {
+                Console.WriteLine($"Player with ID: \"{fromClient}\" has assumed the wrong client ID: \"{clientIDCheck}\"!");
+            }
+
+            Player player = Server.clients[fromClient].Player;
+            HexCoordinates coordinates = packet.ReadHexCoordinates();
+
+            if (player.Tribe != null)
+            {
+                if (GameLogic.Harvest(player.Tribe.Id, coordinates))
+                    ServerSend.BroadcastHarvest(player.Tribe.Id, coordinates);
+            }
+        }
     }
 }
