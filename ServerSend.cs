@@ -184,6 +184,7 @@ namespace GameServer
                 packet.Write(coordinates);
                 packet.Write((byte)type);
                 packet.Write(amount);
+                SendTCPDataToAll(packet);
             }
         }
 
@@ -193,6 +194,7 @@ namespace GameServer
             {
                 packet.Write(player.Name);
                 packet.Write(coordinates);
+                SendTCPDataToAll(packet);
             }
         }
 
@@ -202,6 +204,7 @@ namespace GameServer
             {
                 packet.Write(tribeID);
                 packet.Write(coordinates);
+                SendTCPDataToAll(packet);
             }
 
         }

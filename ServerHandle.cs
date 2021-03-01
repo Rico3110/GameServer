@@ -81,6 +81,11 @@ namespace GameServer
                 player.Tribe = tribe;
                 ServerSend.BroadcastApplyBuildHQ(coordinates);
                 ServerSend.BroadcastPlayer(player);
+                Console.WriteLine("Player: " + player.Name + " successfully placed a HQ.");
+            }
+            else
+            {
+                Console.WriteLine("Player: " + player.Name + " failed to build HQ");
             }
         }
 
@@ -97,12 +102,18 @@ namespace GameServer
 
             HexCoordinates coordinates = packet.ReadHexCoordinates();
             Type type = packet.ReadType();
+
             Building building = (Building)Activator.CreateInstance(type);
 
-            if(GameLogic.VerifyBuild(coordinates, building, player))
+            if (GameLogic.VerifyBuild(coordinates, type, player))
             {
-                GameLogic.ApplyBuild(coordinates, building, player.Tribe);
+                GameLogic.ApplyBuild(coordinates, type, player.Tribe);
                 ServerSend.BroadcastApplyBuild(coordinates, type, player.Tribe.Id);             
+                Console.WriteLine("Player: " + player.Name + " of tribe " + player.Tribe.Id.ToString() + " successfully placed a " + building.GetName() + ".");
+            }
+            else
+            {
+                Console.WriteLine("Player: " + player.Name + " of tribe " + player.Tribe.Id.ToString() + " failed to build " + building.GetName() + ".");
             }
         }
 
@@ -122,6 +133,11 @@ namespace GameServer
             {
                 GameLogic.ApplyUpgrade(coordinates, player.Tribe);
                 ServerSend.BroadcastUpgradeBuilding(coordinates);
+                Console.WriteLine("Player: " + player.Name + " of tribe " + player.Tribe.Id.ToString() + " successfully upgraded a building at " + coordinates.ToString() + ".");
+            }
+            else
+            {
+                Console.WriteLine("Player: " + player.Name + " of tribe " + player.Tribe.Id.ToString() + " failed upgrade building at " + coordinates.ToString() + "");
             }
         }
 
@@ -161,9 +177,12 @@ namespace GameServer
                     {
                         player.Tribe = GameLogic.GetTribe(((Headquarter)hq).Tribe);
                         ServerSend.BroadcastPlayer(player);
+                        Console.WriteLine("Player: " + player.Name + " successfully joined the tribe " + player.Tribe.Id.ToString() + ".");
+                        return;
                     }
                 }
             }
+            Console.WriteLine("Player: " + player.Name + " failed to join the tribe " + player.Tribe.Id.ToString() + ".");
         }
 
         public static void HandleMoveTroops(int fromClient, Packet packet)
@@ -185,6 +204,11 @@ namespace GameServer
             if (GameLogic.MoveTroops(player, coordinates, troopType, amount))
             {
                 ServerSend.BroadcastMoveTroops(player, coordinates, troopType, amount);
+                Console.WriteLine("Player: " + player.Name + "of tribe " + player.Tribe.Id.ToString() + " successfully exchanged " + amount.ToString() + troopType.ToString() + " with a building at" + coordinates.ToString() + ".");
+            }
+            else
+            {
+                Console.WriteLine("Player: " + player.Name + "of tribe " + player.Tribe.Id.ToString() + " failed to exchange " + amount.ToString() + troopType.ToString() +" with building at " + coordinates.ToString() + ".");
             }
         }
 
@@ -200,9 +224,17 @@ namespace GameServer
             Player player = Server.clients[fromClient].Player;
             HexCoordinates coordinates = packet.ReadHexCoordinates();
 
-            GameLogic.Fight(player, coordinates);
+            if(GameLogic.PlayerInRange(coordinates, player))
+            {
+                GameLogic.Fight(player, coordinates);
+                ServerSend.BroadcastFight(player, coordinates);
+                Console.WriteLine("Player: " + player.Name + "of tribe" + player.Tribe.Id.ToString() + " successfully fought a building at " + coordinates.ToString() + ".");
+            }
+            else
+            {
+                Console.WriteLine("Player: " + player.Name + "of tribe" + player.Tribe.Id.ToString() + " failed to fight a building at " + coordinates.ToString() + ".");
+            }
 
-            ServerSend.BroadcastFight(player, coordinates);
         }
 
         public static void HandleHarvest(int fromClient, Packet packet)
@@ -220,8 +252,13 @@ namespace GameServer
             if (player.Tribe != null)
             {
                 if (GameLogic.Harvest(player.Tribe.Id, coordinates))
+                {
                     ServerSend.BroadcastHarvest(player.Tribe.Id, coordinates);
+                    Console.WriteLine("Player: " + player.Name + "of tribe" + player.Tribe.Id.ToString() + " successfully harvested ressource at " + coordinates.ToString() + ".");
+                    return;
+                }
             }
+            Console.WriteLine("Player: " + player.Name + "of tribe" + player.Tribe.Id.ToString() + " failed to harvest ressource at " + coordinates.ToString() + ".");
         }
     }
 }

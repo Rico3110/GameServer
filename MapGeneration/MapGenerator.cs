@@ -87,7 +87,7 @@ namespace Shared.MapGeneration
 
             float deltaLat = TILE_COUNT_Z * Math.Abs((float)Slippy.tiley2lat(Slippy.lat2tiley(LATITUDE, MapboxHandler.ZOOM), MapboxHandler.ZOOM) - (float)Slippy.tiley2lat((Slippy.lat2tiley(LATITUDE, MapboxHandler.ZOOM) + 1), MapboxHandler.ZOOM));
             float cornerLat = (float)Slippy.tiley2lat((Slippy.lat2tiley(LATITUDE, MapboxHandler.ZOOM) + TILE_COUNT_Z / 2 + 1), MapboxHandler.ZOOM) + 0.5f * ((HEX_WIDTH - HEX_HEIGHT) / HEX_WIDTH) * deltaLat;
-
+            /*
             Console.WriteLine(cornerLon);
             Console.WriteLine(cornerLat);
 
@@ -95,7 +95,7 @@ namespace Shared.MapGeneration
             Console.WriteLine(cornerLat + deltaLat);
 
             Console.WriteLine(0.5f * ((HEX_WIDTH - HEX_HEIGHT) / HEX_WIDTH) * deltaLat);
-
+            */
             hexGrid = new HexGrid.HexGrid(CHUNK_COUNT_X, CHUNK_COUNT_Z, cornerLon, cornerLat, deltaLon, (HEX_HEIGHT / HEX_WIDTH) * deltaLat);
 
             waterAreas = new List<List<HexCell>>();
@@ -208,7 +208,7 @@ namespace Shared.MapGeneration
                 {
                     if(parsedBiomes[biome] < biomeThresholds[biome].Item1)
                     {
-                        Console.WriteLine("Adjusting missing: " + biome.ToString());
+                        //Console.WriteLine("Adjusting missing: " + biome.ToString());
                         if (biome == HexCellBiome.ROCK || biome == HexCellBiome.COAL)
                         {
                             List<HexCell> buildings = new List<HexCell>();
@@ -261,11 +261,11 @@ namespace Shared.MapGeneration
             }
             while (count > 0)
             {
-                Console.WriteLine("Replacing " + replace.ToString() + " with " + biome.ToString());
+                //Console.WriteLine("Replacing " + replace.ToString() + " with " + biome.ToString());
                 HexCell cell = replaceCells[random.Next(0, replaceCells.Count)];
                 //cell.Data.SetBiome(biome);
                 cell.Data = new HexCellData(cell.Data.Elevation, biome, cell.Data.WaterDepth);
-                Console.WriteLine(cell.Data.Biome.ToString() + biome.ToString());
+                //Console.WriteLine(cell.Data.Biome.ToString() + biome.ToString());
                 this.parsedBiomes[biome]++;
                 this.parsedBiomes[replace]--;
                 replaceCells.Remove(cell);
