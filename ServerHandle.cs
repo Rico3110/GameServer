@@ -257,8 +257,8 @@ namespace GameServer
                     Console.WriteLine("Player: " + player.Name + "of tribe" + player.Tribe.Id.ToString() + " successfully harvested ressource at " + coordinates.ToString() + ".");
                     return;
                 }
+                Console.WriteLine("Player: " + player.Name + "of tribe" + player.Tribe.Id.ToString() + " failed to harvest ressource at " + coordinates.ToString() + ".");
             }
-            Console.WriteLine("Player: " + player.Name + "of tribe" + player.Tribe.Id.ToString() + " failed to harvest ressource at " + coordinates.ToString() + ".");
         }
     }
 }
