@@ -68,8 +68,10 @@ namespace GameServer
         {
             using (Packet packet = new Packet((int)ServerPackets.initGameLogic))
             {
+                //Send HexGrid
                 packet.Write(GameLogic.grid);
 
+                //Send ownPlayer
                 Player ownPlayer = Server.clients[toClient].Player;
                 packet.Write(ownPlayer.Name);
                 if (ownPlayer.Tribe == null)
@@ -83,6 +85,7 @@ namespace GameServer
                 packet.Write(ownPlayer.Position);
                 packet.Write(ownPlayer.TroopInventory);
 
+                //Send other Players
                 packet.Write(GameLogic.Players.Count);
                 foreach (Player player in GameLogic.Players)
                 {
