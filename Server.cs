@@ -115,7 +115,9 @@ namespace GameServer
                 {(int)ClientPackets.requestJoinTribe, ServerHandle.HandleJoinTribe},
                 {(int)ClientPackets.requestMoveTroops, ServerHandle.HandleMoveTroops},
                 {(int)ClientPackets.requestFight, ServerHandle.HandleFight},
-                {(int)ClientPackets.requestHarvest, ServerHandle.HandleHarvest}
+                {(int)ClientPackets.requestHarvest, ServerHandle.HandleHarvest},
+                {(int)ClientPackets.requestChangeAllowedRessource, ServerHandle.HandleChangeAllowedRessource}
+
             };
             Console.WriteLine($"Initialized packets");
         }

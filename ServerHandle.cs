@@ -260,5 +260,28 @@ namespace GameServer
                 Console.WriteLine("Player: " + player.Name + "of tribe" + player.Tribe.Id.ToString() + " failed to harvest ressource at " + coordinates.ToString() + ".");
             }
         }
+
+        public static void HandleChangeAllowedRessource(int fromClient, Packet packet)
+        {
+            int clientIDCheck = packet.ReadInt();
+
+            if (fromClient != clientIDCheck)
+            {
+                Console.WriteLine($"Player with ID: \"{fromClient}\" has assumed the wrong client ID: \"{clientIDCheck}\"!");
+            }
+
+            Player player = Server.clients[fromClient].Player;
+            HexCoordinates originCoordinates = packet.ReadHexCoordinates();
+
+            if (GameLogic.PlayerInRange(originCoordinates, player))
+            {
+                HexCoordinates destinationCoordinates = packet.ReadHexCoordinates();
+                RessourceType ressourceType = (RessourceType)packet.ReadByte();
+                bool newValue = packet.ReadBool();
+                if (GameLogic.ChangeAllowedRessource(originCoordinates, destinationCoordinates, ressourceType, newValue))
+                    ServerSend.BroadcastChangeAllowedRessource(originCoordinates, destinationCoordinates, ressourceType, newValue);
+            }
+
+        }
     }
 }

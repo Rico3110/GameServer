@@ -211,5 +211,17 @@ namespace GameServer
             }
 
         }
+
+        public static void BroadcastChangeAllowedRessource(HexCoordinates originCoordinates, HexCoordinates destinationCoordinates, RessourceType ressourceType, bool newValue)
+        {
+            using (Packet packet = new Packet((int)ServerPackets.broadcastChangeAllowedRessource))
+            {
+                packet.Write(originCoordinates);
+                packet.Write(destinationCoordinates);
+                packet.Write((byte)ressourceType);
+                packet.Write(newValue);
+                SendTCPDataToAll(packet);
+            }
+        }
     }
 }
