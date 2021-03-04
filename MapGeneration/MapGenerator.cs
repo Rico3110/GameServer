@@ -294,7 +294,7 @@ namespace Shared.MapGeneration
                     case HexCellBiome.WATER:
                     {
                         double r = random.NextDouble();
-                        if (r < 0.1)
+                        if (r < 0.5)
                             cell.Structure = new Fish(cell, 0);
                         break;
                     }
@@ -305,7 +305,11 @@ namespace Shared.MapGeneration
                     }
                     case HexCellBiome.GRASS:
                     {
-                        cell.Structure = new Grass(cell, 0);
+                        double r = random.NextDouble();
+                        if (r < 0.4)
+                            cell.Structure = new Cow(cell, 0);
+                        else
+                            cell.Structure = new Grass(cell, 0);
                         break;
                     }
                     case HexCellBiome.CITY:
@@ -313,14 +317,14 @@ namespace Shared.MapGeneration
                         break;
                     }
                     case HexCellBiome.COAL:
-                        {
-                            cell.Structure = new CoalOre(cell, 0);
-                            break;
-                        }
+                    {
+                        cell.Structure = new CoalOre(cell, 0);
+                        break;
+                    }
                     case HexCellBiome.CROP:
                     {
-                        //if (random.NextDouble() < 0.2)
-                        //    cell.Structure = new Wheat(cell, 0);
+                        if (random.NextDouble() < 0.2)
+                            cell.Structure = new Wheat(cell, 0);
                         break;
                     }
                     default: 
