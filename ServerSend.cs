@@ -223,5 +223,14 @@ namespace GameServer
                 SendTCPDataToAll(packet);
             }
         }
+
+        public static void BroadcastChangeTroopRecipeOfBarracks(HexCoordinates barracks, TroopType troopType)
+        {
+            using (Packet packet = new Packet((int)ServerPackets.broadcastChangeTroopRecipeOfBarracks))
+            {
+                packet.Write(barracks);
+                packet.Write((byte)troopType);
+            }
+        }
     }
 }

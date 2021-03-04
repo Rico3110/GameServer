@@ -281,7 +281,26 @@ namespace GameServer
                 if (GameLogic.ChangeAllowedRessource(originCoordinates, destinationCoordinates, ressourceType, newValue))
                     ServerSend.BroadcastChangeAllowedRessource(originCoordinates, destinationCoordinates, ressourceType, newValue);
             }
+        }
 
+        public static void HandleChangeTroopRecipeOfBarracks(int fromClient, Packet packet)
+        {
+            int clientIDCheck = packet.ReadInt();
+
+            if (fromClient != clientIDCheck)
+            {
+                Console.WriteLine($"Player with ID: \"{fromClient}\" has assumed the wrong client ID: \"{clientIDCheck}\"!");
+            }
+
+            Player player = Server.clients[fromClient].Player;
+            HexCoordinates barracks = packet.ReadHexCoordinates();
+            TroopType troopType = (TroopType)packet.ReadByte();
+
+            if (GameLogic.PlayerInRange(barracks, player))
+            {
+                if (GameLogic.ChangeTroopRecipeOfBarracks(barracks, troopType))
+                    ServerSend.BroadcastChangeTroopRecipeOfBarracks(barracks, troopType);
+            }
         }
     }
 }
