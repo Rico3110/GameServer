@@ -34,6 +34,8 @@ namespace GameServer
             private Packet recievedData;
             private byte[] recieveBuffer;
 
+            public int sentPackages = 0;
+
             public TCP(int id)
             {
                 this.id = id;
@@ -62,6 +64,30 @@ namespace GameServer
                     if(socket != null)
                     {
                         stream.BeginWrite(packet.ToArray(), 0, packet.Length(), null, null);
+                        sentPackages++;
+                    }
+                }
+                catch (Exception e)
+                {
+                    Console.WriteLine($"Error sending Data to Player {id} via TCP: {e}.");
+                }
+            }
+
+            public void SendData(List<byte[]> dataArray)
+            {
+                foreach(byte[] data in dataArray)
+                {
+                    SendData(data);
+                }
+            }
+
+            public void SendData(byte[] data)
+            {
+                try
+                {
+                    if (socket != null)
+                    {
+                        stream.BeginWrite(data, 0, data.Length, null, null);
                     }
                 }
                 catch (Exception e)

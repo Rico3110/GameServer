@@ -26,6 +26,7 @@ namespace GameServer
             {
                 Server.clients[i].tcp.SendData(packet);
             }
+            PacketBuffer.Add(packet.ToArray());
         }
 
         public static void SendTCPDataToAll(int exceptClient,Packet packet)

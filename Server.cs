@@ -42,10 +42,10 @@ namespace GameServer
 
             Console.WriteLine("Starting Server...");
             InitSeverData();
-             
+            
             //Get User Input for Coordinates
-            float lat = 49.873497f;
-            float lon = 8.649533f;
+            float lat = 49.861232f;
+            float lon = 8.668550f;
 
             if (askForCoordinates)
             {
@@ -67,7 +67,7 @@ namespace GameServer
 
             Console.WriteLine("Generating Map...");
             Console.WriteLine(lat + " , " + lon);
-            MapGenerator mapGenerator = new MapGenerator(lat,lon, 3);
+            MapGenerator mapGenerator = new MapGenerator(lat,lon, 7);
 
             GameLogic.Init(mapGenerator.CreateMap());
            

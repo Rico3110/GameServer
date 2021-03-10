@@ -33,8 +33,33 @@ namespace GameServer
                 {
                     if (client.Player == clientPlayer)
                     {
-                        Console.WriteLine($"Can't assign a Player to \"{username}\" (ID: {fromClient}) because there is already an active client with the username \"{username}\"!");
+                        // Console.WriteLine($"Can't assign a Player to \"{username}\" (ID: {fromClient}) because there is already an active client with the username \"{username}\"!");
                         // Server.clients[fromClient].Disconnect();
+
+                        Console.WriteLine("A Player has connected with a name which is already assigned to an active player. Assuming that this is due to a network change the server tries to sync the client with the lost packages!");
+
+                        int receivedClientPackages = packet.ReadInt();
+                        foreach (KeyValuePair<int, Client> kvp in Server.clients)
+                        {
+                            if (kvp.Value.Player == clientPlayer && kvp.Value != client)
+                            {
+                                int missingPackages = kvp.Value.tcp.sentPackages - receivedClientPackages;
+                                if (missingPackages > PacketBuffer.size)
+                                {
+                                    Console.WriteLine("Number of lost packages were too high. Full Reconnect for client necessary!");
+                                    ServerSend.InitGameLogic(fromClient);
+                                }
+                                else
+                                {
+                                    List<byte[]> lostPackages = PacketBuffer.GetLostPackets(missingPackages);
+                                    Server.clients[fromClient].tcp.SendData(lostPackages);
+                                }
+                                Server.clients[fromClient].tcp.sentPackages = 0;
+                                // Server.clients[fromClient].tcp.sentPackages = kvp.Value.tcp.sentPackages;
+                                Server.clients[kvp.Key].Disconnect();
+                                break;
+                            }
+                        }
                     }
                 }
                 Server.clients[fromClient].Player = clientPlayer;
@@ -182,7 +207,7 @@ namespace GameServer
                     }
                 }
             }
-            Console.WriteLine("Player: " + player.Name + " failed to join the tribe " + player.Tribe.Id.ToString() + ".");
+            Console.WriteLine("Player: " + player.Name + " failed to join the tribe " + ".");
         }
 
         public static void HandleMoveTroops(int fromClient, Packet packet)
@@ -301,6 +326,18 @@ namespace GameServer
                 if (GameLogic.ChangeTroopRecipeOfBarracks(barracks, troopType))
                     ServerSend.BroadcastChangeTroopRecipeOfBarracks(barracks, troopType);
             }
+        }
+
+        public static void HandleReconnect(int fromClient, Packet packet)
+        {
+            int clientIDCheck = packet.ReadInt();
+
+            if (fromClient != clientIDCheck)
+            {
+                Console.WriteLine($"Player with ID: \"{fromClient}\" has assumed the wrong client ID: \"{clientIDCheck}\"!");
+            }
+
+
         }
     }
 }

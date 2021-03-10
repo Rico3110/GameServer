@@ -46,6 +46,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Client.cs" />
+    <Compile Include="PacketBuffer.cs" />
     <Compile Include="Shared-Scripts\Communication\Packet.cs" />
     <Compile Include="Shared-Scripts\DataTypes\TroopType.cs" />
     <Compile Include="Shared-Scripts\DataTypes\RessourceTypes.cs" />
