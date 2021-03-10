@@ -233,5 +233,27 @@ namespace GameServer
                 packet.Write((byte)troopType);
             }
         }
+
+        public static void BroadcastChangeStrategyOfProtectedBuilding(HexCoordinates coordinates, int oldIndex, int newIndex)
+        {
+            using (Packet packet = new Packet((int)ServerPackets.broadcastChangeStrategyOfProtectedBuilding))
+            {
+                packet.Write(coordinates);
+                packet.Write(oldIndex);
+                packet.Write(newIndex);
+                SendTCPDataToAll(packet);
+            }
+        }
+
+        public static void BroadcastChangeStrategyOfPlayer(string playerName, int oldIndex, int newIndex)
+        {
+            using (Packet packet = new Packet((int)ServerPackets.broadcastChangeStrategyOfName))
+            {
+                packet.Write(playerName);
+                packet.Write(oldIndex);
+                packet.Write(newIndex);
+                SendTCPDataToAll(packet);
+            }
+        }
     }
 }
