@@ -52,6 +52,8 @@ namespace GameServer
                 recievedData = new Packet();
                 recieveBuffer = new byte[dataBufferSize];
 
+                stream.ReadTimeout = 10000;
+                stream.WriteTimeout = 10000;
                 stream.BeginRead(recieveBuffer, 0, dataBufferSize, RecieveCallback, null);
 
                 ServerSend.Welcome(id, "Welcome to the server!");
@@ -63,12 +65,18 @@ namespace GameServer
                 {
                     if(socket != null)
                     {
+                        Console.WriteLine("Sending Data to client with id: " + id);
+                        Console.WriteLine(socket.Client.Connected);
                         stream.BeginWrite(packet.ToArray(), 0, packet.Length(), null, null);
                         sentPackages++;
                     }
                 }
                 catch (Exception e)
                 {
+                    if(e is System.IO.IOException)
+                    {
+                        Console.WriteLine("Player with id: " + id + " lost connection.");
+                    }
                     Console.WriteLine($"Error sending Data to Player {id} via TCP: {e}.");
                 }
             }
@@ -115,7 +123,14 @@ namespace GameServer
                 }
                 catch (Exception ex)
                 {
-                    Console.WriteLine($"Error recieving TCP data {ex}");
+                    if (ex is System.IO.IOException)
+                    {
+                        Console.WriteLine("Player with id: " + id + " lost connection.");
+                    }
+                    else
+                    {
+                        Console.WriteLine($"Error recieving TCP data {ex}");
+                    }
                     Server.clients[id].Disconnect();
                 }
             }
@@ -143,7 +158,14 @@ namespace GameServer
                         using (Packet packet = new Packet(packetBytes))
                         {
                             int packetID = packet.ReadInt();
-                            Server.packetHandlers[packetID](id,packet);
+                            try 
+                            {
+                                Server.packetHandlers[packetID](id,packet);
+                            } 
+                            catch (Exception e)
+                            {
+                                Console.WriteLine("Action " + ((ClientPackets)packetID).ToString() + " of client " + id.ToString() + " failed.");
+                            }
                         }
                     });
 
