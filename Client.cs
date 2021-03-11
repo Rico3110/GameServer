@@ -65,8 +65,6 @@ namespace GameServer
                 {
                     if(socket != null)
                     {
-                        Console.WriteLine("Sending Data to client with id: " + id);
-                        Console.WriteLine(socket.Client.Connected);
                         stream.BeginWrite(packet.ToArray(), 0, packet.Length(), null, null);
                         sentPackages++;
                     }
