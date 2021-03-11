@@ -410,5 +410,48 @@ namespace GameServer
             }
         }
 
+        public static void HandleMoveRessource(int fromClient, Packet packet)
+        {
+            int clientIDCheck = packet.ReadInt();
+
+            if (fromClient != clientIDCheck)
+            {
+                Console.WriteLine($"Player with ID: \"{fromClient}\" has assumed the wrong client ID: \"{clientIDCheck}\"!");
+            }
+
+            HexCoordinates originCoordinates = packet.ReadHexCoordinates();
+            HexCoordinates destinationCoordinates = packet.ReadHexCoordinates();
+            RessourceType ressourceType = (RessourceType)packet.ReadByte();
+            int amount = packet.ReadInt();
+            Player player = Server.clients[fromClient].Player;
+
+            if (GameLogic.PlayerInRange(originCoordinates, player) || GameLogic.PlayerInRange(destinationCoordinates, player))
+            {
+                if (GameLogic.MoveRessources(originCoordinates, destinationCoordinates, ressourceType, amount))
+                    ServerSend.BroadcastMoveRessources(originCoordinates, destinationCoordinates, ressourceType, amount);
+            }
+        }
+
+        public static void HandleChangeRessourceLimit(int fromClient, Packet packet)
+        {
+            int clientIDCheck = packet.ReadInt();
+
+            if (fromClient != clientIDCheck)
+            {
+                Console.WriteLine($"Player with ID: \"{fromClient}\" has assumed the wrong client ID: \"{clientIDCheck}\"!");
+            }
+
+            HexCoordinates buildingCoordinates = packet.ReadHexCoordinates();
+            RessourceType ressourceType = (RessourceType)packet.ReadByte();
+            int newValue = packet.ReadInt();
+            Player player = Server.clients[fromClient].Player;
+
+            if (GameLogic.PlayerInRange(buildingCoordinates, player))
+            {
+                if (GameLogic.UpdateRessourceLimit(buildingCoordinates, ressourceType, newValue))
+                    ServerSend.BroadcastChangeRessourceLimit(buildingCoordinates, ressourceType, newValue);
+            }
+        }
+
     }
 }

@@ -277,5 +277,28 @@ namespace GameServer
                 SendTCPDataToAll(packet);
             }
         }
+
+        public static void BroadcastMoveRessources(HexCoordinates originCoordinates, HexCoordinates destinationCoordinates, RessourceType type, int amount)
+        {
+            using (Packet packet = new Packet((int)ServerPackets.broadcastMoveRessources))
+            {
+                packet.Write(originCoordinates);
+                packet.Write(destinationCoordinates);
+                packet.Write((byte)type);
+                packet.Write(amount);
+                SendTCPDataToAll(packet);
+            }
+        }
+
+        public static void BroadcastChangeRessourceLimit(HexCoordinates coordinates, RessourceType type, int newValue)
+        {
+            using (Packet packet = new Packet((int)ServerPackets.broadcastChangeRessourceLimit))
+            {
+                packet.Write(coordinates);
+                packet.Write((byte)type);
+                packet.Write(newValue);
+                SendTCPDataToAll(packet);
+            }
+        }
     }
 }

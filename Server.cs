@@ -120,7 +120,9 @@ namespace GameServer
                 {(int)ClientPackets.requestChangeTroopRecipeOfBarracks, ServerHandle.HandleChangeTroopRecipeOfBarracks},
                 {(int)ClientPackets.requestChangeOrderOfStrategy, ServerHandle.HandleChangeStrategy},
                 {(int)ClientPackets.requestChangeActiveOfStrategyPlayer, ServerHandle.HandleChangeActiveOfStrategyPlayer},
-                {(int)ClientPackets.requestChangeActiveOfStrategyBuilding, ServerHandle.HandleChangeActiveOfStrategyBuilding}
+                {(int)ClientPackets.requestChangeActiveOfStrategyBuilding, ServerHandle.HandleChangeActiveOfStrategyBuilding},
+                {(int)ClientPackets.requestMoveRessource, ServerHandle.HandleMoveRessource},
+                {(int)ClientPackets.requestChangeRessourceLimit, ServerHandle.HandleChangeRessourceLimit}
             };
             Console.WriteLine($"Initialized packets");
         }
