@@ -255,5 +255,27 @@ namespace GameServer
                 SendTCPDataToAll(packet);
             }
         }
+
+        public static void BroadcastChangeStrategyActivePlayer(string playerName, TroopType type, bool newValue)
+        {
+            using (Packet packet = new Packet((int)ServerPackets.broadcastChangeStrategyActivePlayer))
+            {
+                packet.Write(playerName);
+                packet.Write((byte)type);
+                packet.Write(newValue);
+                SendTCPDataToAll(packet);
+            }
+        }
+
+        public static void BroadcastChangeStrategyActiveBuilding(HexCoordinates coordinates, TroopType type, bool newValue)
+        {
+            using (Packet packet = new Packet((int)ServerPackets.broadcastChangeStrategyActiveBuilding))
+            {
+                packet.Write(coordinates);
+                packet.Write((byte)type);
+                packet.Write(newValue);
+                SendTCPDataToAll(packet);
+            }
+        }
     }
 }

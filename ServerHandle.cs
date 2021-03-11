@@ -369,5 +369,46 @@ namespace GameServer
                 }
             }
         }
+
+        public static void HandleChangeActiveOfStrategyPlayer(int fromClient, Packet packet)
+        {
+            int clientIDCheck = packet.ReadInt();
+
+            if (fromClient != clientIDCheck)
+            {
+                Console.WriteLine($"Player with ID: \"{fromClient}\" has assumed the wrong client ID: \"{clientIDCheck}\"!");
+            }
+
+            TroopType type = (TroopType)packet.ReadByte();
+            bool newValue = packet.ReadBool();
+
+            Player player = Server.clients[fromClient].Player;
+
+            if (GameLogic.ChangeActiveStrategyOfPlayer(player.Name, type, newValue))
+                ServerSend.BroadcastChangeStrategyActivePlayer(player.Name, type, newValue);
+        }
+
+        public static void HandleChangeActiveOfStrategyBuilding(int fromClient, Packet packet)
+        {
+            int clientIDCheck = packet.ReadInt();
+
+            if (fromClient != clientIDCheck)
+            {
+                Console.WriteLine($"Player with ID: \"{fromClient}\" has assumed the wrong client ID: \"{clientIDCheck}\"!");
+            }
+
+            HexCoordinates coordinates = packet.ReadHexCoordinates();
+            TroopType type = (TroopType)packet.ReadByte();
+            bool newValue = packet.ReadBool();
+
+            Player player = Server.clients[fromClient].Player;
+
+            if (GameLogic.PlayerInRange(coordinates, player))
+            {
+                if (GameLogic.ChangeActiveStrategyOfBuilding(coordinates, type, newValue))
+                    ServerSend.BroadcastChangeStrategyActiveBuilding(coordinates, type, newValue);
+            }
+        }
+
     }
 }
