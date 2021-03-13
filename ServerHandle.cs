@@ -112,6 +112,7 @@ namespace GameServer
             {
                 Console.WriteLine("Player: " + player.Name + " failed to build HQ");
             }
+            Server.SaveGame();
         }
 
         public static void HandlePlaceBuilding(int fromClient, Packet packet)
@@ -140,6 +141,7 @@ namespace GameServer
             {
                 Console.WriteLine("Player: " + player.Name + " of tribe " + player.Tribe.Id.ToString() + " failed to build " + building.GetName() + ".");
             }
+            Server.SaveGame();
         }
 
         public static void HandleUpgradeBuilding(int fromClient, Packet packet)

@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 using System.Net;
 using System.Net.Sockets;
 using System.Diagnostics;
+using System.IO;
 using Shared.MapGeneration;
 using Shared.DataTypes;
 using Shared.Game;
@@ -42,7 +43,29 @@ namespace GameServer
 
             Console.WriteLine("Starting Server...");
             InitSeverData();
+
+
             
+
+            if (File.Exists("savegame.hex"))
+            {
+                LoadGame();
+            }
+            else
+            {
+                NewGame();
+            }
+
+
+            tcpListener = new TcpListener(IPAddress.Any, Port);
+            tcpListener.Start();
+            tcpListener.BeginAcceptTcpClient(new AsyncCallback(TCPConnectCallback), null);
+
+            Console.WriteLine($"Server Started on {Port}.");                   
+        }
+
+        private static void NewGame()
+        {
             //Get User Input for Coordinates
             float lat = 49.861232f;
             float lon = 8.668550f;
@@ -51,32 +74,55 @@ namespace GameServer
             {
                 Console.WriteLine("Please enter the latitude of your desired position or leave empty for default position...");
                 string latS = Console.ReadLine();
-                if(latS != "")
+                if (latS != "")
                 {
                     lat = float.Parse(latS);
                 }
-            
+
                 Console.WriteLine("Please enter the longtitude of your desired position or leave empty for default position...");
                 string lonS = Console.ReadLine();
-                if(lonS != "")
+                if (lonS != "")
                 {
                     lon = float.Parse(lonS);
                 }
             }
-            
+
 
             Console.WriteLine("Generating Map...");
             Console.WriteLine(lat + " , " + lon);
-            MapGenerator mapGenerator = new MapGenerator(lat,lon, 7);
+            MapGenerator mapGenerator = new MapGenerator(lat, lon, 7);
 
             GameLogic.Init(mapGenerator.CreateMap());
-           
+        }
 
-            tcpListener = new TcpListener(IPAddress.Any, Port);
-            tcpListener.Start();
-            tcpListener.BeginAcceptTcpClient(new AsyncCallback(TCPConnectCallback), null);
+        public static void SaveGame()
+        {
+            File.WriteAllBytes("savegame.hex", ServerSend.GameState().ToArray());
+        }
 
-            Console.WriteLine($"Server Started on {Port}.");                   
+        private static void LoadGame()
+        {
+            Console.WriteLine("Loading Game...");
+            byte[] gamestate = File.ReadAllBytes("savegame.hex");
+            Packet packet = new Packet(gamestate);
+
+            HexGrid hexGrid = packet.ReadHexGrid();
+
+            GameLogic.Init(hexGrid);
+
+            int count = packet.ReadInt();
+            Console.WriteLine(count);
+            for (int i = 0; i < count; i++)
+            {
+                string playerName = packet.ReadString();
+
+                int tribeId = packet.ReadByte();
+                HexCoordinates playerPos = packet.ReadHexCoordinates();
+                TroopInventory troopInventory = packet.ReadTroopInventory();
+
+                GameLogic.AddPlayer(playerName, tribeId, playerPos, troopInventory);
+            }
+            Console.WriteLine("Game Loaded!");
         }
 
         private static void TCPConnectCallback(IAsyncResult result)

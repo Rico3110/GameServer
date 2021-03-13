@@ -5,6 +5,7 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Threading;
 using Shared.Structures;
+using Shared.Communication;
 using Shared.Game;
 
 namespace GameServer
@@ -40,7 +41,7 @@ namespace GameServer
                     GameServer.MainThread.Update();
                     
                     counter++;
-                    if (counter == 90)
+                    if (counter == Constants.COUNTER_MAX)
                     {
                         
                         GameLogic.DoTick();

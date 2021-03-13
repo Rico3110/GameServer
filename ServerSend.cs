@@ -71,7 +71,6 @@ namespace GameServer
             {
                 //Send HexGrid
                 packet.Write(GameLogic.grid);
-
                 //Send ownPlayer
                 Player ownPlayer = Server.clients[toClient].Player;
                 packet.Write(ownPlayer.Name);
@@ -104,6 +103,28 @@ namespace GameServer
             }   
         }   
     
+        public static Packet GameState()
+        {
+            Packet packet = new Packet();
+
+            packet.Write(GameLogic.grid);
+
+            //Send other Players
+            packet.Write(GameLogic.Players.Count);
+            foreach (Player player in GameLogic.Players)
+            {
+                packet.Write(player.Name);
+                Tribe tribe = player.Tribe;
+                if (tribe == null)
+                    packet.Write((byte)255);
+                else
+                    packet.Write(player.Tribe.Id);
+                packet.Write(player.Position);
+                packet.Write(player.TroopInventory);
+            }
+            return packet;
+        }
+
         public static void SendStructure(HexCoordinates coordinates, Structure structure)
         {
             using (Packet packet = new Packet((int)ServerPackets.sendStructure))

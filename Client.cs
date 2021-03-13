@@ -162,7 +162,7 @@ namespace GameServer
                             } 
                             catch (Exception e)
                             {
-                                Console.WriteLine("Action " + ((ClientPackets)packetID).ToString() + " of client " + id.ToString() + " failed.");
+                                Console.WriteLine("Action " + ((ClientPackets)packetID).ToString() + " of client " + id.ToString() + " failed with exception " + e.ToString());
                             }
                         }
                     });
