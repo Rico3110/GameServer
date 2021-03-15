@@ -50,10 +50,10 @@ namespace GameServer
                     }
 
                     nextLoop = nextLoop.AddMilliseconds(Constants.MS_PER_TICK);
-
-                    if(nextLoop > DateTime.Now)
+                    DateTime now = DateTime.Now;
+                    if(nextLoop > now)
                     {
-                        Thread.Sleep(nextLoop - DateTime.Now);
+                        Thread.Sleep(nextLoop - now);
                     }
                 }
             }

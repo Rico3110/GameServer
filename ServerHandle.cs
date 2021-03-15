@@ -481,5 +481,24 @@ namespace GameServer
                 }
             }
         }
+
+        public static void HandleDestroyBuilding(int fromClient, Packet packet)
+        {
+            int clientIDCheck = packet.ReadInt();
+
+            if(fromClient != clientIDCheck)
+            {
+                Console.WriteLine($"Player with ID: \"{fromClient}\" has assumed the wrong client ID: \"{clientIDCheck}\"!");
+            }
+            HexCoordinates coords = packet.ReadHexCoordinates();
+            Player player = Server.clients[fromClient].Player;
+            if(GameLogic.PlayerInRange(coords, player))
+            {
+                if (GameLogic.DestroyStructure(coords))
+                {
+                    ServerSend.BroadcastDestroyBuilding(coords);
+                }
+            }
+        }
     }
 }

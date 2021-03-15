@@ -169,7 +169,8 @@ namespace GameServer
                 {(int)ClientPackets.requestChangeActiveOfStrategyBuilding, ServerHandle.HandleChangeActiveOfStrategyBuilding},
                 {(int)ClientPackets.requestMoveRessource, ServerHandle.HandleMoveRessource},
                 {(int)ClientPackets.requestChangeRessourceLimit, ServerHandle.HandleChangeRessourceLimit},
-                {(int)ClientPackets.requestUpdateMarketRessource, ServerHandle.HandleUpdateMarketRessource}
+                {(int)ClientPackets.requestUpdateMarketRessource, ServerHandle.HandleUpdateMarketRessource},
+                {(int)ClientPackets.requestDestroyBuilding, ServerHandle.HandleDestroyBuilding }
             };
             Console.WriteLine($"Initialized packets");
         }

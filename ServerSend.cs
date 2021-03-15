@@ -252,6 +252,7 @@ namespace GameServer
             {
                 packet.Write(barracks);
                 packet.Write((byte)troopType);
+                SendTCPDataToAll(packet);
             }
         }
 
@@ -329,6 +330,14 @@ namespace GameServer
                 packet.Write(coords);
                 packet.Write((byte)type);
                 packet.Write(isInput);
+                SendTCPDataToAll(packet);
+            }
+        }
+
+        public static void BroadcastDestroyBuilding(HexCoordinates coords) {
+            using (Packet packet = new Packet((int)ServerPackets.broadcastDestroyBuilding))
+            {
+                packet.Write(coords);
                 SendTCPDataToAll(packet);
             }
         }
