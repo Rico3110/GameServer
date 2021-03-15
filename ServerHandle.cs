@@ -306,8 +306,13 @@ namespace GameServer
                 RessourceType ressourceType = (RessourceType)packet.ReadByte();
                 bool newValue = packet.ReadBool();
                 if (GameLogic.ChangeAllowedRessource(originCoordinates, destinationCoordinates, ressourceType, newValue))
+                {
+                    Console.WriteLine("Player: " + player.Name + "of tribe" + player.Tribe.Id.ToString() + " changed allowed Ressource: " + ressourceType.ToString() + " at " + originCoordinates.ToString() + ".");
                     ServerSend.BroadcastChangeAllowedRessource(originCoordinates, destinationCoordinates, ressourceType, newValue);
+                    return;
+                }
             }
+            Console.WriteLine("Player: " + player.Name + "of tribe" + player.Tribe.Id.ToString() + " failed to change allowed Ressource at " + originCoordinates.ToString() + ".");
         }
 
         public static void HandleChangeTroopRecipeOfBarracks(int fromClient, Packet packet)
@@ -455,5 +460,26 @@ namespace GameServer
             }
         }
 
+        public static void HandleUpdateMarketRessource(int fromClient, Packet packet)
+        {
+            int clientIDCheck = packet.ReadInt();
+
+            if (fromClient != clientIDCheck)
+            {
+                Console.WriteLine($"Player with ID: \"{fromClient}\" has assumed the wrong client ID: \"{clientIDCheck}\"!");
+            }
+
+            HexCoordinates coords = packet.ReadHexCoordinates();
+            RessourceType ressourceType = (RessourceType)packet.ReadByte();
+            bool isInput = packet.ReadBool();
+
+            if (GameLogic.PlayerInRange(coords, Server.clients[fromClient].Player))
+            {
+                if (GameLogic.UpdateMarketRessource(coords, ressourceType, isInput))
+                {
+                    ServerSend.BroadcastUpdateMarket(coords, ressourceType, isInput);
+                }
+            }
+        }
     }
 }

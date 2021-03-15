@@ -67,8 +67,8 @@ namespace GameServer
         private static void NewGame()
         {
             //Get User Input for Coordinates
-            float lat = 49.861232f;
-            float lon = 8.668550f;
+            float lat = 50.347863f;
+            float lon = 8.155518f;
 
             if (askForCoordinates)
             {
@@ -168,7 +168,8 @@ namespace GameServer
                 {(int)ClientPackets.requestChangeActiveOfStrategyPlayer, ServerHandle.HandleChangeActiveOfStrategyPlayer},
                 {(int)ClientPackets.requestChangeActiveOfStrategyBuilding, ServerHandle.HandleChangeActiveOfStrategyBuilding},
                 {(int)ClientPackets.requestMoveRessource, ServerHandle.HandleMoveRessource},
-                {(int)ClientPackets.requestChangeRessourceLimit, ServerHandle.HandleChangeRessourceLimit}
+                {(int)ClientPackets.requestChangeRessourceLimit, ServerHandle.HandleChangeRessourceLimit},
+                {(int)ClientPackets.requestUpdateMarketRessource, ServerHandle.HandleUpdateMarketRessource}
             };
             Console.WriteLine($"Initialized packets");
         }

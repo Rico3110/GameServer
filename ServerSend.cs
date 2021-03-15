@@ -321,5 +321,16 @@ namespace GameServer
                 SendTCPDataToAll(packet);
             }
         }
+
+        public static void BroadcastUpdateMarket(HexCoordinates coords, RessourceType type, bool isInput)
+        {
+            using (Packet packet = new Packet((int)ServerPackets.broadcastUpdateMarketRessource))
+            {
+                packet.Write(coords);
+                packet.Write((byte)type);
+                packet.Write(isInput);
+                SendTCPDataToAll(packet);
+            }
+        }
     }
 }
