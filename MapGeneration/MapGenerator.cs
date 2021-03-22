@@ -231,6 +231,8 @@ namespace Shared.MapGeneration
                             HexCellBiome.FOREST, 
                             (HexCellBiome agg, KeyValuePair<HexCellBiome, int> elem) => agg = (elem.Value > parsedBiomes[agg] ? elem.Key : agg));
                         */
+                        parsedBiomes.Remove(HexCellBiome.WATER);
+
                         HexCellBiome majorityBiome = this.parsedBiomes.Aggregate(HexCellBiome.FOREST, (HexCellBiome elem1, KeyValuePair<HexCellBiome, int> elem2) =>
                         {
                             if (parsedBiomes[elem1] < elem2.Value)
@@ -239,7 +241,9 @@ namespace Shared.MapGeneration
                                 return elem1;
                         });
 
-                        int count = biomeThresholds[biome].Item1 - parsedBiomes[biome];
+                        int landCells = parsedBiomes.Aggregate(0, (int agg, KeyValuePair<HexCellBiome, int> elem2) => agg = agg + elem2.Value);
+
+                        int count = (int)((float)biomeThresholds[biome].Item1 * ((float)landCells / (float)CELL_COUNT)) - parsedBiomes[biome];
                         ReplaceMissingBiome(biome, majorityBiome, count);
                         
                     }
@@ -279,37 +283,38 @@ namespace Shared.MapGeneration
         {
             foreach(HexCell cell in this.hexGrid.cells)
             {
+                if(cell.Data.WaterDepth == 0)
                 switch (cell.Data.Biome)
                 {
                     case HexCellBiome.FOREST:
                     {
-                        cell.Structure = new Tree(cell, 0);
+                        cell.Structure = new Tree(cell);
                         break;
                     }
                     case HexCellBiome.ROCK:
                     {
-                        cell.Structure = new Rock(cell, 0);
+                        cell.Structure = new Rock(cell);
                         break;
                     }
                     case HexCellBiome.WATER:
                     {
                         double r = random.NextDouble();
                         if (r < 0.5)
-                            cell.Structure = new Fish(cell, 0);
+                            cell.Structure = new Fish(cell);
                         break;
                     }
                     case HexCellBiome.SCRUB:
                     {
-                        cell.Structure = new Scrub(cell, 0);
+                        cell.Structure = new Scrub(cell);
                         break;
                     }
                     case HexCellBiome.GRASS:
                     {
                         double r = random.NextDouble();
-                        if (r < 0.4)
-                            cell.Structure = new Cow(cell, 0);
+                        if (r < 0.1)
+                            cell.Structure = new Cow(cell);
                         else
-                            cell.Structure = new Grass(cell, 0);
+                            cell.Structure = new Grass(cell);
                         break;
                     }
                     case HexCellBiome.CITY:
@@ -318,13 +323,13 @@ namespace Shared.MapGeneration
                     }
                     case HexCellBiome.COAL:
                     {
-                        cell.Structure = new CoalOre(cell, 0);
+                        cell.Structure = new CoalOre(cell);
                         break;
                     }
                     case HexCellBiome.CROP:
                     {
-                        if (random.NextDouble() < 0.2)
-                            cell.Structure = new Wheat(cell, 0);
+                        if (random.NextDouble() < 0.4)
+                            cell.Structure = new Wheat(cell);
                         break;
                     }
                     default: 

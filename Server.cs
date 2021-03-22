@@ -34,7 +34,7 @@ namespace GameServer
         private static Stopwatch sw;
         private static long ping;
 
-        private static bool askForCoordinates = false; 
+        private static bool askForCoordinates = true; 
 
         public static void Start(int maxPlayers, int port)
         {
@@ -66,13 +66,14 @@ namespace GameServer
 
         private static void NewGame()
         {
+            
             //Get User Input for Coordinates
-            float lat = 50.347863f;
-            float lon = 8.155518f;
+            float lat = 50.232767f;
+            float lon = 8.457934f;
 
             if (askForCoordinates)
             {
-                Console.WriteLine("Please enter the latitude of your desired position or leave empty for default position...");
+                Console.WriteLine("Please enter the latitude of your desired position or leave empty for default position(Darmstadt)...");
                 string latS = Console.ReadLine();
                 if (latS != "")
                 {
@@ -111,7 +112,6 @@ namespace GameServer
             GameLogic.Init(hexGrid);
 
             int count = packet.ReadInt();
-            Console.WriteLine(count);
             for (int i = 0; i < count; i++)
             {
                 string playerName = packet.ReadString();
